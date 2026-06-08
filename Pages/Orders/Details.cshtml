@@ -1,0 +1,81 @@
+@page "{id:guid}"
+@model Marketplace.Web.Pages.Orders.DetailsModel
+
+@{
+    ViewData["Title"] = "Detalhe do pedido";
+}
+
+<div class="container py-4">
+    @if (TempData["SuccessMessage"] is string message)
+    {
+        <div class="alert alert-success">@message</div>
+    }
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <section class="marketplace-card p-4 mb-4">
+        <div class="d-flex justify-content-between">
+            <div>
+                <h1 class="h3">Pedido</h1>
+                <div class="text-muted">@Model.OrderPage.Order.OrderId</div>
+            </div>
+
+            <span class="badge bg-primary align-self-start">@Model.OrderPage.Order.Status</span>
+        </div>
+
+        <hr />
+
+        <div class="row">
+            <div class="col-md-4">Produtos: <strong>@Model.OrderPage.Order.ItemsTotal.ToString("C")</strong></div>
+            <div class="col-md-4">Frete: <strong>@Model.OrderPage.Order.ShippingPrice.ToString("C")</strong></div>
+            <div class="col-md-4">Total: <strong>@Model.OrderPage.Order.TotalAmount.ToString("C")</strong></div>
+        </div>
+    </section>
+
+    @if (Model.OrderPage.Shipment is not null)
+    {
+        <section class="marketplace-card p-4 mb-4">
+            <h2 class="h4">Entrega</h2>
+            <div>Transportadora: @Model.OrderPage.Shipment.CarrierCode</div>
+            <div>Código: @Model.OrderPage.Shipment.TrackingCode</div>
+            <div>Previsão: @Model.OrderPage.Shipment.PromisedDeliveryDate.ToString("dd/MM/yyyy")</div>
+        </section>
+    }
+
+    @if (Model.OrderPage.Tracking is not null)
+    {
+        <section class="marketplace-card p-4 mb-4">
+            <h2 class="h4">@Model.OrderPage.Tracking.CurrentStatus</h2>
+
+            <div class="tracking-timeline mt-4">
+                @foreach (var trackingEvent in Model.OrderPage.Tracking.Events.OrderByDescending(x => x.OccurredAt))
+                {
+                    <div class="tracking-event">
+                        <div class="tracking-dot"></div>
+                        <div>
+                            <strong>@trackingEvent.Status</strong>
+                            <div>@trackingEvent.Description</div>
+                            <div class="text-muted small">
+                                @trackingEvent.City @trackingEvent.State — @trackingEvent.OccurredAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+
+    @foreach (var warning in Model.OrderPage.Warnings)
+    {
+        <div class="alert alert-warning">@warning</div>
+    }
+
+    @if (Model.OrderPage.Order.Status is not ("Confirmed" or "Cancelled"))
+    {
+        <form method="post" asp-page-handler="Cancel">
+            <input asp-for="Id" type="hidden" />
+            <input asp-for="CancellationReason" type="hidden" />
+            <button type="submit" class="btn btn-outline-danger">Solicitar cancelamento</button>
+        </form>
+    }
+</div>

@@ -1,44 +1,55 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - MarketplaceWeb</title>
+    <title>@ViewData["Title"] - MarketPlace</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MarketplaceWeb.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">MarketplaceWeb</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                    </ul>
+    <header class="marketplace-header">
+        <div class="container py-3">
+            <div class="row align-items-center g-3">
+                <div class="col-md-2">
+                    <a asp-page="/Index" class="marketplace-logo">MarketPlace</a>
+                </div>
+
+                <div class="col-md-7">
+                    <form method="get" action="/Search">
+                        <div class="input-group">
+                            <input type="search" name="query" class="form-control" placeholder="Buscar produtos" />
+                            <button class="btn btn-light" type="submit">Buscar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-md-3 text-end">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a asp-page="/Orders/Index" class="btn btn-link">Meus pedidos</a>
+
+                        <form method="post" asp-page="/Account/Logout" class="d-inline">
+                            <button class="btn btn-link" type="submit">Sair</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-page="/Account/Login" class="btn btn-primary">Entrar</a>
+                    }
                 </div>
             </div>
-        </nav>
+        </div>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+
+    <main role="main">
+        @RenderBody()
+    </main>
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2026 - MarketplaceWeb - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            &copy; 2026 - MarketPlace
         </div>
     </footer>
 
