@@ -1,0 +1,74 @@
+@page "{id:guid}"
+@model Marketplace.Web.Pages.Products.DetailsModel
+
+@{
+    ViewData["Title"] = Model.ProductPage.Product.Title;
+}
+
+<div class="container py-4">
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="marketplace-card product-image-placeholder">
+                <span>Imagem do produto</span>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <section class="marketplace-card p-4">
+                <div class="text-muted small">@Model.ProductPage.Product.Category</div>
+                <h1 class="h3 mt-2">@Model.ProductPage.Product.Title</h1>
+                <div class="product-price mt-4">@Model.ProductPage.Product.Price.ToString("C")</div>
+
+                @if (!Model.ProductPage.Product.AvailableForSale)
+                {
+                    <div class="alert alert-warning mt-3">Produto indisponível.</div>
+                }
+
+                <hr />
+
+                <form method="get">
+                    <input type="hidden" name="id" value="@Model.Id" />
+
+                    <div class="mb-3">
+                        <label asp-for="ZipCode" class="form-label">Calcular prazo e frete</label>
+                        <input asp-for="ZipCode" class="form-control" placeholder="00000-000" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Quantity" class="form-label">Quantidade</label>
+                        <input asp-for="Quantity" type="number" min="1" max="99" class="form-control" />
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-primary w-100">Calcular entrega</button>
+                </form>
+
+                @if (Model.ProductPage.Shipping is not null)
+                {
+                    <div class="shipping-result mt-4">
+                        @if (Model.ProductPage.Shipping.Available)
+                        {
+                            <strong>Chega em @Model.ProductPage.Shipping.EstimatedDeliveryDate?.ToString("dd/MM/yyyy")</strong>
+                            <div>Frete: @Model.ProductPage.Shipping.Cost?.ToString("C")</div>
+                        }
+                        else
+                        {
+                            <div class="text-danger">@Model.ProductPage.Shipping.UnavailableReason</div>
+                        }
+                    </div>
+                }
+
+                @foreach (var warning in Model.ProductPage.Warnings)
+                {
+                    <div class="alert alert-warning mt-3">@warning</div>
+                }
+
+                <a asp-page="/Checkout/Review"
+                   asp-route-skuId="@Model.Id"
+                   asp-route-quantity="@Model.Quantity"
+                   class="btn btn-primary btn-lg w-100 mt-4">
+                    Comprar agora
+                </a>
+            </section>
+        </div>
+    </div>
+</div>
