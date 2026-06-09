@@ -85,7 +85,7 @@ builder.Services
         options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(5);
         options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(2);
         options.Retry.MaxRetryAttempts = 2;
-        options.Retry.DisableForUnsafeHttpMethods();
+        //options.Retry.DisableForUnsafeHttpMethods();
         options.CircuitBreaker.FailureRatio = 0.5;
         options.CircuitBreaker.MinimumThroughput = 20;
         options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(30);
