@@ -17,8 +17,12 @@
                 @if (string.IsNullOrWhiteSpace(Model.Query))
                 {
                     <p class="lead mb-4">
-                        Digite um termo no campo de busca para procurar produtos no marketplace.
+                        Digite o SKU do produto no campo de busca para abrir a página de detalhes.
                     </p>
+
+                    <div class="alert alert-info mb-0" role="status">
+                        A busca por texto ainda não está disponível porque o BFF expõe apenas consultas por SKU.
+                    </div>
                 }
                 else
                 {
@@ -26,9 +30,9 @@
                         Você pesquisou por <strong>@Model.Query</strong>.
                     </p>
 
-                    <div class="alert alert-info mb-0" role="status">
-                        A página de busca já está disponível, mas a listagem de resultados ainda depende do endpoint
-                        de catálogo do BFF. Enquanto isso, refine sua pesquisa ou acesse um produto diretamente pelo link.
+                    <div class="alert alert-warning mb-0" role="status">
+                        Ainda não é possível listar produtos pelo termo pesquisado porque o BFF não expõe um endpoint
+                        de busca de catálogo. Para abrir um produto diretamente, pesquise pelo SKU em formato GUID.
                     </div>
                 }
             </div>
