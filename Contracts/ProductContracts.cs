@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Marketplace.Web.Contracts;
 
 public sealed record ProductPageResponse(
@@ -21,12 +23,22 @@ public sealed record ShippingSummary(
     decimal? Cost,
     string? UnavailableReason);
 
-public sealed record ProductSearchResponse(
-    IReadOnlyList<ProductSearchItem> Products);
+public sealed class ProductSearchResponse
+{
+    [JsonPropertyName("products")]
+    public IReadOnlyList<ProductSearchItem> Products { get; init; } = [];
+
+    [JsonPropertyName("items")]
+    public IReadOnlyList<ProductSearchItem>? Items
+    {
+        get => Products;
+        init => Products = value ?? [];
+    }
+}
 
 public sealed record ProductSearchItem(
     Guid SkuId,
-    Guid SellerId,
+    string? SellerId,
     string Title,
     string Category,
     decimal Price,
