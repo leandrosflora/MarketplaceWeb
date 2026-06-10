@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="utf-8" />
@@ -26,18 +26,7 @@
                 </div>
 
                 <div class="col-md-3 text-end">
-                    @if (User.Identity?.IsAuthenticated == true)
-                    {
-                        <a asp-page="/Orders/Index" class="btn btn-link">Meus pedidos</a>
-
-                        <form method="post" asp-page="/Account/Logout" class="d-inline">
-                            <button class="btn btn-link" type="submit">Sair</button>
-                        </form>
-                    }
-                    else
-                    {
-                        <a asp-page="/Account/Login" asp-page-handler="Start" class="btn btn-primary">Entrar</a>
-                    }
+                    <a asp-page="/Orders/Index" class="btn btn-outline-light">Meus pedidos</a>
                 </div>
             </div>
         </div>

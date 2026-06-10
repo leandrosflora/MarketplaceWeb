@@ -1,12 +1,10 @@
 using Marketplace.Web.Clients;
 using Marketplace.Web.Contracts;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Marketplace.Web.Pages.Products;
 
-[AllowAnonymous]
 public sealed class DetailsModel : PageModel
 {
     private readonly IMarketplaceBffClient _bffClient;
