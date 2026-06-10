@@ -1,5 +1,28 @@
 @page
 @model Marketplace.Web.Pages.Account.LoginModel
+
 @{
     ViewData["Title"] = "Entrar";
 }
+
+<div class="container py-4">
+    <section class="marketplace-card p-4 p-md-5 mx-auto login-card">
+        <h1 class="h3 mb-3">Entrar</h1>
+        <p class="text-muted">
+            A autenticação é feita pelo provedor de identidade configurado para o marketplace.
+        </p>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div class="alert alert-warning" role="alert">
+                @Model.ErrorMessage
+            </div>
+        }
+
+        <form method="get" asp-page-handler="Start">
+            <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
+            <button type="submit" class="btn btn-primary">Continuar login</button>
+            <a asp-page="/Index" class="btn btn-link">Voltar para o início</a>
+        </form>
+    </section>
+</div>
