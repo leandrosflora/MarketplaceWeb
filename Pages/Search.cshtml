@@ -1,0 +1,37 @@
+@page
+@model Marketplace.Web.Pages.SearchModel
+
+@{
+    ViewData["Title"] = string.IsNullOrWhiteSpace(Model.Query)
+        ? "Buscar produtos"
+        : $"Busca por {Model.Query}";
+}
+
+<div class="container py-4">
+    <section class="marketplace-card p-4 p-md-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <p class="text-uppercase text-muted fw-semibold mb-2">Busca</p>
+                <h1 class="h2 mb-3">Buscar produtos</h1>
+
+                @if (string.IsNullOrWhiteSpace(Model.Query))
+                {
+                    <p class="lead mb-4">
+                        Digite um termo no campo de busca para procurar produtos no marketplace.
+                    </p>
+                }
+                else
+                {
+                    <p class="lead mb-4">
+                        Você pesquisou por <strong>@Model.Query</strong>.
+                    </p>
+
+                    <div class="alert alert-info mb-0" role="status">
+                        A página de busca já está disponível, mas a listagem de resultados ainda depende do endpoint
+                        de catálogo do BFF. Enquanto isso, refine sua pesquisa ou acesse um produto diretamente pelo link.
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+</div>
