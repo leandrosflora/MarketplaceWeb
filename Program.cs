@@ -15,6 +15,7 @@ razorPages.AddMvcOptions(options =>
 
 builder.Services.AddProblemDetails();
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<CorrelationIdHandler>();
 
 builder.Services
