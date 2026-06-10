@@ -30,6 +30,17 @@ public sealed class MarketplaceBffClient : IMarketplaceBffClient
         return await GetOrNullAsync<ProductPageResponse>(url, cancellationToken);
     }
 
+    public async Task<ProductSearchResponse> SearchProductsAsync(
+        string query,
+        CancellationToken cancellationToken)
+    {
+        var url = $"/api/web/v1/products/search?query={Uri.EscapeDataString(query)}";
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+
+        return await SendAsync<ProductSearchResponse>(request, cancellationToken);
+    }
+
     public Task<CheckoutPageResponse?> GetCheckoutAsync(
         Guid checkoutId,
         CancellationToken cancellationToken)

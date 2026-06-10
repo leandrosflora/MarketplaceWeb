@@ -10,6 +10,10 @@ public interface IMarketplaceBffClient
         string? zipCode,
         CancellationToken cancellationToken);
 
+    Task<ProductSearchResponse> SearchProductsAsync(
+        string query,
+        CancellationToken cancellationToken);
+
     Task<CheckoutPageResponse?> GetCheckoutAsync(
         Guid checkoutId,
         CancellationToken cancellationToken);
