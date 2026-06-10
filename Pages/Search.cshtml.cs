@@ -1,11 +1,9 @@
 using Marketplace.Web.Clients;
 using Marketplace.Web.Contracts;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Marketplace.Web.Pages;
 
-[AllowAnonymous]
 public sealed class SearchModel : PageModel
 {
     private const int MaximumQueryLength = 100;

@@ -1,6 +1,6 @@
 # Marketplace Web
 
-Documentação do microserviço **Marketplace Web**, uma aplicação web server-side em ASP.NET Core Razor Pages responsável pela experiência de navegação, checkout e acompanhamento de pedidos do marketplace. A aplicação autentica usuários via OpenID Connect, mantém sessão por cookie seguro e consome o BFF do marketplace por HTTP, propagando o token de acesso do usuário e o identificador de correlação das requisições.
+Documentação do microserviço **Marketplace Web**, uma aplicação web server-side em ASP.NET Core Razor Pages responsável pela experiência de navegação, checkout e acompanhamento de pedidos do marketplace. A aplicação consome o BFF do marketplace por HTTP e propaga o identificador de correlação das requisições.
 
 ## Sumário
 
@@ -10,7 +10,7 @@ Documentação do microserviço **Marketplace Web**, uma aplicação web server-
 - [Arquitetura interna](#arquitetura-interna)
 - [Fluxos funcionais](#fluxos-funcionais)
 - [Integração com o BFF](#integração-com-o-bff)
-- [Autenticação e autorização](#autenticação-e-autorização)
+- [Acesso às páginas](#acesso-às-páginas)
 - [Configuração](#configuração)
 - [Executando localmente](#executando-localmente)
 - [Validação e build](#validação-e-build)
@@ -27,10 +27,7 @@ O Marketplace Web é o frontend web do marketplace. Ele renderiza páginas Razor
 Principais características:
 
 - Aplicação ASP.NET Core 8.0 com Razor Pages.
-- Login federado via OpenID Connect usando Authorization Code Flow com PKCE.
-- Sessão local baseada em cookie seguro.
 - Consumo do BFF via `HttpClient` tipado.
-- Propagação de `Bearer token` do usuário autenticado para o BFF.
 - Propagação/criação de `X-Correlation-Id` para rastreabilidade entre serviços.
 - Políticas de resiliência com timeout, retry e circuit breaker.
 - Proteção antifalsificação de requisições habilitada globalmente para formulários.
@@ -44,7 +41,6 @@ Este microserviço é responsável por:
    - Detalhe de produto.
    - Revisão de checkout.
    - Detalhe e rastreamento de pedido.
-   - Páginas de autenticação, logout e acesso negado.
 
 2. **Orquestrar chamadas ao BFF a partir da interface**
    - Obter dados de produto e frete.
@@ -53,13 +49,7 @@ Este microserviço é responsável por:
    - Obter dados de pedido.
    - Solicitar cancelamento de pedido.
 
-3. **Gerenciar autenticação de usuário no frontend**
-   - Redirecionar usuários não autenticados para o provedor de identidade.
-   - Persistir sessão local em cookie.
-   - Salvar tokens recebidos do provedor de identidade.
-   - Encerrar sessão local e remota no logout.
-
-Este serviço **não** deve concentrar regras de negócio centrais do marketplace. Validação transacional, precificação final, disponibilidade, autorização de operações e consistência dos pedidos devem permanecer no BFF e nos serviços de domínio correspondentes.
+Este serviço **não** deve concentrar regras de negócio centrais do marketplace. Validação transacional, precificação final, disponibilidade, autorização de operações e consistência dos pedidos permanecem fora do frontend e devem ficar no BFF e nos serviços de domínio correspondentes.
 
 ## Tecnologias e dependências
 
@@ -67,14 +57,11 @@ Este serviço **não** deve concentrar regras de negócio centrais do marketplac
 | --- | --- |
 | .NET 8.0 | Framework-alvo da aplicação. |
 | ASP.NET Core Razor Pages | Renderização server-side das páginas. |
-| Cookie Authentication | Sessão local do usuário autenticado. |
-| OpenID Connect | Login federado e obtenção de tokens. |
 | Microsoft.Extensions.Http.Resilience | Políticas resilientes para chamadas HTTP ao BFF. |
 | Bootstrap, jQuery e validação unobtrusive | Recursos estáticos de interface presentes em `wwwroot`. |
 
 Pacotes NuGet declarados:
 
-- `Microsoft.AspNetCore.Authentication.OpenIdConnect` versão `8.0.*`.
 - `Microsoft.Extensions.Http.Resilience` versão `8.0.*`.
 
 ## Arquitetura interna
@@ -82,10 +69,7 @@ Pacotes NuGet declarados:
 ```mermaid
 flowchart LR
     Browser[Navegador] -->|HTTPS| Web[Marketplace Web\nRazor Pages]
-    Web -->|Challenge OIDC| IdP[Identity Provider]
-    IdP -->|Code + tokens| Web
-    Web -->|Cookie seguro| Browser
-    Web -->|HTTP + Bearer token\nX-Correlation-Id| BFF[Marketplace BFF]
+    Web -->|HTTP + X-Correlation-Id| BFF[Marketplace BFF]
     BFF --> Domain[Serviços de domínio]
 ```
 
@@ -93,9 +77,7 @@ flowchart LR
 
 - `Program.cs`
   - Registra Razor Pages.
-  - Define páginas públicas e protegidas.
-  - Configura autenticação por cookie e OpenID Connect.
-  - Registra handlers HTTP de token e correlação.
+  - Registra handlers HTTP de correlação.
   - Registra `IMarketplaceBffClient` com resiliência.
   - Monta o pipeline HTTP da aplicação.
 
@@ -104,10 +86,6 @@ flowchart LR
   - Converte chamadas de página em requisições HTTP.
   - Trata `404 Not Found` como resposta nula para telas de detalhe.
   - Converte erros do BFF em `BffApiException` usando `ProblemDetails` quando disponível.
-
-- `Infrastructure/UserAccessTokenHandler.cs`
-  - Recupera `access_token` salvo na sessão autenticada.
-  - Adiciona o cabeçalho `Authorization: Bearer <token>` nas chamadas ao BFF.
 
 - `Infrastructure/CorrelationIdHandler.cs`
   - Reaproveita o `X-Correlation-Id` recebido, quando presente.
@@ -241,9 +219,8 @@ A URL base do BFF é configurada em `Bff:BaseUrl`. O valor padrão em `appsettin
 O serviço registra `IMarketplaceBffClient` como cliente HTTP tipado. Todas as chamadas ao BFF passam pela seguinte cadeia:
 
 1. `CorrelationIdHandler` adiciona `X-Correlation-Id`.
-2. `UserAccessTokenHandler` adiciona `Authorization: Bearer` quando o usuário está autenticado.
-3. Políticas de resiliência do `AddStandardResilienceHandler` controlam timeout, retry e circuit breaker.
-4. `MarketplaceBffClient` serializa ou desserializa JSON e trata erros.
+2. Políticas de resiliência do `AddStandardResilienceHandler` controlam timeout, retry e circuit breaker.
+3. `MarketplaceBffClient` serializa ou desserializa JSON e trata erros.
 
 ### Endpoints consumidos
 
@@ -255,47 +232,16 @@ O serviço registra `IMarketplaceBffClient` como cliente HTTP tipado. Todas as c
 | Obter pedido | `GET` | `/api/web/v1/orders/{orderId}` |
 | Cancelar pedido | `POST` | `/api/web/v1/orders/{orderId}/cancel` |
 
-## Autenticação e autorização
+## Acesso às páginas
 
-A aplicação usa dois esquemas principais:
-
-- **Cookie** como esquema padrão de autenticação.
-- **OpenID Connect** como esquema padrão de challenge.
-
-### Configuração do cookie
-
-- Nome: `__Host-marketplace-web`.
-- `HttpOnly`: habilitado.
-- `SecurePolicy`: sempre HTTPS.
-- `SameSite`: `Lax`.
-- Expiração: 8 horas.
-- Expiração deslizante: habilitada.
-- Página de login: `/Account/Login`.
-- Página de acesso negado: `/Account/AccessDenied`.
-
-### Configuração OpenID Connect
-
-A aplicação usa:
-
-- `ResponseType = code`.
-- PKCE habilitado.
-- Tokens salvos na sessão de autenticação.
-- Claims carregadas pelo endpoint de userinfo.
-- Escopos: `openid`, `profile` e `marketplace-bff`.
-- `name` como claim de nome.
-- `role` como claim de papel.
-
-### Páginas públicas e protegidas
+Neste momento o frontend não registra autenticação/autorização própria. As páginas de navegação, checkout e pedidos ficam acessíveis diretamente para facilitar os testes das integrações com o BFF.
 
 | Área | Acesso |
 | --- | --- |
 | `/Index` | Público |
 | `/Products/*` | Público |
-| `/Checkout/*` | Autenticado |
-| `/Orders/*` | Autenticado |
-| `/Account/Login` | Público, inicia challenge OIDC |
-| `/Account/Logout` | Autenticado via sessão atual, encerra cookie e OIDC |
-| `/Account/AccessDenied` | Público para exibir negação de acesso |
+| `/Checkout/*` | Público |
+| `/Orders/*` | Público |
 
 ## Configuração
 
@@ -303,34 +249,24 @@ A aplicação usa:
 
 | Chave | Descrição | Exemplo |
 | --- | --- | --- |
-| `OpenIdConnect:Authority` | URL do provedor de identidade. | `https://identity.marketplace.local` |
-| `OpenIdConnect:ClientId` | Client ID OIDC da aplicação web. | `marketplace-web` |
-| `OpenIdConnect:ClientSecret` | Segredo do client. Deve ser fornecido por variável de ambiente/secret em ambientes reais. | `""` |
-| `OpenIdConnect:ResponseType` | Tipo de resposta configurado. No código é usado `code`. | `code` |
 | `Bff:BaseUrl` | URL base do Marketplace BFF. | `https://localhost:7229` |
 | `Logging:LogLevel:*` | Níveis de log da aplicação e bibliotecas. | `Information`, `Warning` |
 | `AllowedHosts` | Hosts aceitos pelo ASP.NET Core. | `*` |
 
 ### Variáveis de ambiente recomendadas
 
-Em ambientes de desenvolvimento, homologação ou produção, prefira sobrescrever segredos por variáveis de ambiente:
+Em ambientes de desenvolvimento, homologação ou produção, prefira sobrescrever valores por variáveis de ambiente:
 
 ```bash
 export ASPNETCORE_ENVIRONMENT=Development
-export OpenIdConnect__Authority="https://identity.marketplace.local"
-export OpenIdConnect__ClientId="marketplace-web"
-export OpenIdConnect__ClientSecret="seu-segredo"
 export Bff__BaseUrl="https://localhost:7229"
 ```
-
-> Observação: em produção, não versionar `ClientSecret` em arquivos JSON. Use secret manager, cofre de segredos ou mecanismo equivalente da plataforma.
 
 ## Executando localmente
 
 ### Pré-requisitos
 
 - SDK do .NET 8 instalado.
-- Provedor de identidade OIDC acessível e com client `marketplace-web` configurado.
 - Marketplace BFF disponível na URL configurada em `Bff:BaseUrl`.
 - Certificado de desenvolvimento HTTPS confiável, caso use o perfil `https`.
 
@@ -408,10 +344,8 @@ MarketplaceWeb/
 │   ├── OrderContracts.cs
 │   └── ProductContracts.cs
 ├── Infrastructure/
-│   ├── CorrelationIdHandler.cs
-│   └── UserAccessTokenHandler.cs
+│   └── CorrelationIdHandler.cs
 ├── Pages/
-│   ├── Account/
 │   ├── Checkout/
 │   ├── Orders/
 │   ├── Products/
@@ -502,11 +436,6 @@ Quando o BFF retorna erro:
 
 Medidas já presentes:
 
-- Cookie `HttpOnly`.
-- Cookie sempre marcado como seguro.
-- `SameSite=Lax`.
-- PKCE no fluxo OIDC.
-- Tokens salvos somente na sessão de autenticação server-side.
 - Antiforgery token validado automaticamente em ações MVC/Razor Pages.
 - HSTS habilitado fora do ambiente de desenvolvimento.
 - Redirecionamento HTTP para HTTPS.
@@ -514,7 +443,6 @@ Medidas já presentes:
 
 Recomendações para produção:
 
-- Configurar `OpenIdConnect:ClientSecret` via cofre de segredos.
 - Restringir `AllowedHosts` aos domínios reais.
 - Garantir HTTPS ponta a ponta.
 - Configurar políticas de CSP, se aplicável.
@@ -535,27 +463,6 @@ Solução:
 export Bff__BaseUrl="https://localhost:7229"
 dotnet run --launch-profile https
 ```
-
-### Erro: sessão autenticada sem access token
-
-Mensagem esperada:
-
-```text
-The authenticated session does not contain an access token.
-```
-
-Causas prováveis:
-
-- Provedor OIDC não retornou `access_token`.
-- `SaveTokens` foi desabilitado por alteração futura.
-- Escopo `marketplace-bff` não foi aceito pelo provedor.
-- Sessão/cookie antigo foi reaproveitado após mudança de configuração.
-
-Soluções:
-
-1. Fazer logout e login novamente.
-2. Conferir client OIDC e escopos no provedor de identidade.
-3. Conferir se o BFF aceita o audience/scope do token emitido.
 
 ### Erros de certificado HTTPS em desenvolvimento
 
@@ -579,7 +486,7 @@ Verifique:
 
 - Se o identificador enviado é um GUID válido.
 - Se o BFF está apontando para o ambiente correto.
-- Se o usuário autenticado tem permissão para acessar o recurso.
+- Se o BFF está aplicando alguma regra de permissão, escopo ou ambiente que impeça o acesso ao recurso.
 
 ## Evolução sugerida
 
