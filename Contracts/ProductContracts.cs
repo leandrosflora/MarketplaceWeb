@@ -20,3 +20,21 @@ public sealed record ShippingSummary(
     DateOnly? EstimatedDeliveryDate,
     decimal? Cost,
     string? UnavailableReason);
+
+public sealed record ProductSearchResponse(
+    IReadOnlyList<ProductSearchItem> Products);
+
+public sealed record ProductSearchItem(
+    Guid SkuId,
+    Guid SellerId,
+    string Title,
+    string Category,
+    decimal Price,
+    string Status,
+    decimal? Score = null)
+{
+    public bool AvailableForSale => string.Equals(
+        Status,
+        "Active",
+        StringComparison.OrdinalIgnoreCase);
+}
