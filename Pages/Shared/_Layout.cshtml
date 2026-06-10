@@ -17,9 +17,9 @@
                 </div>
 
                 <div class="col-md-7">
-                    <form method="get" action="/Search">
+                    <form method="get" asp-page="/Search">
                         <div class="input-group">
-                            <input type="search" name="query" class="form-control" placeholder="Buscar produtos" />
+                            <input type="search" name="query" value='@Context.Request.Query["query"]' class="form-control" placeholder="Buscar produtos" />
                             <button class="btn btn-light" type="submit">Buscar</button>
                         </div>
                     </form>
@@ -36,7 +36,7 @@
                     }
                     else
                     {
-                        <a asp-page="/Account/Login" class="btn btn-primary">Entrar</a>
+                        <a asp-page="/Account/Login" asp-page-handler="Start" class="btn btn-primary">Entrar</a>
                     }
                 </div>
             </div>
