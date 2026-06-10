@@ -38,7 +38,7 @@ public sealed class ProductSearchResponse
 
 public sealed record ProductSearchItem(
     Guid SkuId,
-    Guid SellerId,
+    string? SellerId,
     string Title,
     string Category,
     decimal Price,
