@@ -139,7 +139,16 @@ Chamada BFF:
 GET /api/web/v1/products/{skuId}/page?quantity={quantity}&zipCode={zipCode}
 ```
 
-### 2. Revisão de checkout
+### 2. Busca por SKU
+
+Rota: `GET /Search?query={skuId}`
+
+1. A página normaliza o texto pesquisado e limita o valor a 100 caracteres.
+2. Quando o valor pesquisado é um GUID válido, a aplicação redireciona para `/Products/Details/{skuId}`.
+3. Quando o valor não é um GUID, a tela informa que a busca textual ainda não está disponível porque o BFF expõe apenas consultas de produto por SKU.
+4. A página de busca não chama o BFF enquanto não existir um endpoint de listagem de catálogo por termo.
+
+### 3. Revisão de checkout
 
 Rota: `GET /Checkout/Review?checkoutId={checkoutId}`
 
@@ -155,7 +164,7 @@ Chamada BFF:
 GET /api/web/v1/checkouts/{checkoutId}
 ```
 
-### 3. Confirmação de compra
+### 4. Confirmação de compra
 
 Rota: `POST /Checkout/Review?handler=Confirm`
 
@@ -179,7 +188,7 @@ Content-Type: application/json
 }
 ```
 
-### 4. Detalhe e rastreamento de pedido
+### 5. Detalhe e rastreamento de pedido
 
 Rota: `GET /Orders/Details/{id}`
 
@@ -194,7 +203,7 @@ Chamada BFF:
 GET /api/web/v1/orders/{orderId}
 ```
 
-### 5. Cancelamento de pedido
+### 6. Cancelamento de pedido
 
 Rota: `POST /Orders/Details/{id}?handler=Cancel`
 

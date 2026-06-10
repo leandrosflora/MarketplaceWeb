@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Marketplace.Web.Pages;
@@ -10,9 +11,16 @@ public sealed class SearchModel : PageModel
 
     public string? Query { get; private set; }
 
-    public void OnGet(string? query)
+    public IActionResult OnGet(string? query)
     {
         Query = NormalizeQuery(query);
+
+        if (Guid.TryParse(Query, out var skuId))
+        {
+            return RedirectToPage("/Products/Details", new { id = skuId });
+        }
+
+        return Page();
     }
 
     private static string? NormalizeQuery(string? query)
