@@ -29,18 +29,18 @@ builder.Services
         client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
     })
-    .AddHttpMessageHandler<CorrelationIdHandler>()
-    .AddStandardResilienceHandler(options =>
-    {
-        options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(5);
-        options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(2);
-        options.Retry.MaxRetryAttempts = 2;
-        //options.Retry.DisableForUnsafeHttpMethods();
-        options.CircuitBreaker.FailureRatio = 0.5;
-        options.CircuitBreaker.MinimumThroughput = 20;
-        options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(30);
-        options.CircuitBreaker.BreakDuration = TimeSpan.FromSeconds(15);
-    });
+    .AddHttpMessageHandler<CorrelationIdHandler>();
+    //.AddStandardResilienceHandler(options =>
+    //{
+    //    options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(50);
+    //    options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(20);
+    //    options.Retry.MaxRetryAttempts = 2;
+    //    //options.Retry.DisableForUnsafeHttpMethods();
+    //    //options.CircuitBreaker.FailureRatio = 0.5;
+    //    //options.CircuitBreaker.MinimumThroughput = 20;
+    //    //options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(30);
+    //    //options.CircuitBreaker.BreakDuration = TimeSpan.FromSeconds(15);
+    //});
 
 var app = builder.Build();
 
