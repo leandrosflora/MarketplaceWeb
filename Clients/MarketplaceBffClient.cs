@@ -14,31 +14,85 @@ public sealed class MarketplaceBffClient : IMarketplaceBffClient
         _httpClient = httpClient;
     }
 
+    public Task<ProductResponse?> GetProductAsync(
+        Guid skuId,
+        CancellationToken cancellationToken)
+    {
+        return GetOrNullAsync<ProductResponse>(
+            $"/api/web/v1/products/{skuId}",
+            cancellationToken);
+    }
+
     public async Task<ProductPageResponse?> GetProductPageAsync(
         Guid skuId,
         int quantity,
         string? zipCode,
         CancellationToken cancellationToken)
     {
-        var url = $"/api/web/v1/products/{skuId}/page?quantity={quantity}";
-
-        if (!string.IsNullOrWhiteSpace(zipCode))
+        var query = new Dictionary<string, string?>
         {
-            url += $"&zipCode={Uri.EscapeDataString(zipCode)}";
-        }
+            ["quantity"] = quantity.ToString(),
+            ["zipCode"] = zipCode
+        };
 
-        return await GetOrNullAsync<ProductPageResponse>(url, cancellationToken);
+        return await GetOrNullAsync<ProductPageResponse>(
+            $"/api/web/v1/products/{skuId}/page{BuildQueryString(query)}",
+            cancellationToken);
     }
 
     public async Task<ProductSearchResponse> SearchProductsAsync(
         string query,
+        int? page,
+        int? pageSize,
+        string? zipCode,
+        string? region,
         CancellationToken cancellationToken)
     {
-        var url = $"/api/web/v1/products/search?query={Uri.EscapeDataString(query)}";
+        var queryString = BuildQueryString(new Dictionary<string, string?>
+        {
+            ["query"] = query,
+            ["page"] = page?.ToString(),
+            ["pageSize"] = pageSize?.ToString(),
+            ["zipCode"] = zipCode,
+            ["region"] = region
+        });
 
-        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        using var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            $"/api/web/v1/products/search{queryString}");
 
         return await SendAsync<ProductSearchResponse>(request, cancellationToken);
+    }
+
+    public async Task<ShippingPromiseResponse> CalculateShippingPromiseAsync(
+        ShippingPromiseRequest input,
+        CancellationToken cancellationToken)
+    {
+        using var request = new HttpRequestMessage(
+            HttpMethod.Post,
+            "/api/web/v1/shipping-promises")
+        {
+            Content = JsonContent.Create(input)
+        };
+
+        return await SendAsync<ShippingPromiseResponse>(request, cancellationToken);
+    }
+
+    public async Task<CheckoutPageResponse> CreateCheckoutAsync(
+        CreateCheckoutRequest input,
+        string idempotencyKey,
+        CancellationToken cancellationToken)
+    {
+        using var request = new HttpRequestMessage(
+            HttpMethod.Post,
+            "/api/web/v1/checkouts")
+        {
+            Content = JsonContent.Create(input)
+        };
+
+        request.Headers.Add("Idempotency-Key", idempotencyKey);
+
+        return await SendAsync<CheckoutPageResponse>(request, cancellationToken);
     }
 
     public Task<CheckoutPageResponse?> GetCheckoutAsync(
@@ -98,6 +152,24 @@ public sealed class MarketplaceBffClient : IMarketplaceBffClient
         await EnsureSuccessAsync(response, cancellationToken);
     }
 
+    public Task<TrackingSummary?> GetOrderTrackingAsync(
+        Guid orderId,
+        CancellationToken cancellationToken)
+    {
+        return GetOrNullAsync<TrackingSummary>(
+            $"/api/web/v1/orders/{orderId}/tracking",
+            cancellationToken);
+    }
+
+    public Task<ShipmentLabelResponse?> GetShipmentLabelAsync(
+        Guid shipmentId,
+        CancellationToken cancellationToken)
+    {
+        return GetOrNullAsync<ShipmentLabelResponse>(
+            $"/api/web/v1/shipments/{shipmentId}/label",
+            cancellationToken);
+    }
+
     private async Task<T?> GetOrNullAsync<T>(
         string url,
         CancellationToken cancellationToken)
@@ -112,6 +184,18 @@ public sealed class MarketplaceBffClient : IMarketplaceBffClient
         await EnsureSuccessAsync(response, cancellationToken);
 
         return await response.Content.ReadFromJsonAsync<T>(cancellationToken);
+    }
+
+    private static string BuildQueryString(IReadOnlyDictionary<string, string?> parameters)
+    {
+        var values = parameters
+            .Where(parameter => !string.IsNullOrWhiteSpace(parameter.Value))
+            .Select(parameter =>
+                $"{Uri.EscapeDataString(parameter.Key)}={Uri.EscapeDataString(parameter.Value!)}");
+
+        var queryString = string.Join("&", values);
+
+        return string.IsNullOrWhiteSpace(queryString) ? string.Empty : $"?{queryString}";
     }
 
     private async Task<T> SendAsync<T>(

@@ -2,6 +2,8 @@
 
 Documentação do microserviço **Marketplace Web**, uma aplicação web server-side em ASP.NET Core Razor Pages responsável pela experiência de navegação, checkout e acompanhamento de pedidos do marketplace. A aplicação consome o BFF do marketplace por HTTP e propaga o identificador de correlação das requisições.
 
+A referência arquitetural canônica deste projeto é o repositório [`leandrosflora/logistica-envios-demo-arch`](https://github.com/leandrosflora/logistica-envios-demo-arch). Os endpoints do BFF abaixo seguem a documentação de `docs/contracts/logistica-envios-apis.openapi.yaml` desse repositório.
+
 ## Sumário
 
 - [Visão geral](#visão-geral)
@@ -117,14 +119,20 @@ Chamada BFF:
 GET /api/web/v1/products/{skuId}/page?quantity={quantity}&zipCode={zipCode}
 ```
 
-### 2. Busca por SKU
+### 2. Busca textual de produtos
 
-Rota: `GET /Search?query={skuId}`
+Rota: `GET /Search?query={texto}`
 
 1. A página normaliza o texto pesquisado e limita o valor a 100 caracteres.
-2. Quando o valor pesquisado é um GUID válido, a aplicação redireciona para `/Products/Details/{skuId}`.
-3. Quando o valor não é um GUID, a tela informa que a busca textual ainda não está disponível porque o BFF expõe apenas consultas de produto por SKU.
-4. A página de busca não chama o BFF enquanto não existir um endpoint de listagem de catálogo por termo.
+2. A aplicação chama o endpoint documentado de busca textual do BFF.
+3. O BFF pode receber paginação, CEP e região, conforme o contrato canônico; a tela atual envia somente `query` e usa os padrões do BFF para os demais parâmetros.
+4. A tela exibe produtos retornados, status de disponibilidade e score quando informado.
+
+Chamada BFF:
+
+```http
+GET /api/web/v1/products/search?query={texto}&page={page}&pageSize={pageSize}&zipCode={zipCode}&region={region}
+```
 
 ### 3. Revisão de checkout
 
@@ -226,11 +234,17 @@ O serviço registra `IMarketplaceBffClient` como cliente HTTP tipado. Todas as c
 
 | Operação | Método | Caminho |
 | --- | --- | --- |
+| Buscar produtos | `GET` | `/api/web/v1/products/search` |
+| Obter produto | `GET` | `/api/web/v1/products/{skuId}` |
 | Página de produto | `GET` | `/api/web/v1/products/{skuId}/page` |
+| Calcular promessa de frete | `POST` | `/api/web/v1/shipping-promises` |
+| Criar checkout | `POST` | `/api/web/v1/checkouts` |
 | Obter checkout | `GET` | `/api/web/v1/checkouts/{checkoutId}` |
 | Confirmar checkout | `POST` | `/api/web/v1/checkouts/{checkoutId}/confirm` |
 | Obter pedido | `GET` | `/api/web/v1/orders/{orderId}` |
 | Cancelar pedido | `POST` | `/api/web/v1/orders/{orderId}/cancel` |
+| Obter tracking do pedido | `GET` | `/api/web/v1/orders/{orderId}/tracking` |
+| Obter etiqueta de shipment | `GET` | `/api/web/v1/shipments/{shipmentId}/label` |
 
 ## Acesso às páginas
 
