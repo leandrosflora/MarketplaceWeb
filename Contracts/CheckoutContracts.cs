@@ -25,6 +25,16 @@ public sealed record ShippingOptionResponse(
     DateOnly EstimatedDeliveryDate,
     decimal Price);
 
+public sealed record CreateCheckoutRequest(
+    IReadOnlyList<CreateCheckoutItemRequest> Items,
+    string ZipCode,
+    string? SelectedShippingPromiseId);
+
+public sealed record CreateCheckoutItemRequest(
+    Guid SkuId,
+    Guid SellerId,
+    int Quantity);
+
 public sealed class ConfirmCheckoutInput
 {
     [Required]

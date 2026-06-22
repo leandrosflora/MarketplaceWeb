@@ -36,3 +36,8 @@ public sealed record TrackingEventSummary(
     string? City,
     string? State,
     DateTimeOffset OccurredAt);
+
+public sealed record ShipmentLabelResponse(
+    Guid ShipmentId,
+    string LabelUrl,
+    DateTimeOffset ExpiresAt);

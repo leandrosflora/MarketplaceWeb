@@ -32,7 +32,13 @@ public sealed class SearchModel : PageModel
 
         try
         {
-            var response = await _bffClient.SearchProductsAsync(Query, cancellationToken);
+            var response = await _bffClient.SearchProductsAsync(
+                Query,
+                null,
+                null,
+                null,
+                null,
+                cancellationToken);
             Products = response.Products ?? [];
         }
         catch (BffApiException ex)
