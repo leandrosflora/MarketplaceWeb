@@ -26,7 +26,9 @@
 
                 <hr />
 
-                <form method="get">
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <form method="post">
                     <input type="hidden" name="id" value="@Model.Id" />
 
                     <div class="mb-3">
@@ -39,7 +41,14 @@
                         <input asp-for="Quantity" type="number" min="1" max="99" class="form-control" />
                     </div>
 
-                    <button type="submit" class="btn btn-outline-primary w-100">Calcular entrega</button>
+                    <button type="submit" formmethod="get" class="btn btn-outline-primary w-100">Calcular entrega</button>
+
+                    <button type="submit"
+                            asp-page-handler="Buy"
+                            class="btn btn-primary btn-lg w-100 mt-4"
+                            disabled="@(!Model.ProductPage.Product.AvailableForSale)">
+                        Comprar agora
+                    </button>
                 </form>
 
                 @if (Model.ProductPage.Shipping is not null)
@@ -62,12 +71,6 @@
                     <div class="alert alert-warning mt-3">@warning</div>
                 }
 
-                <a asp-page="/Checkout/Review"
-                   asp-route-skuId="@Model.Id"
-                   asp-route-quantity="@Model.Quantity"
-                   class="btn btn-primary btn-lg w-100 mt-4">
-                    Comprar agora
-                </a>
             </section>
         </div>
     </div>
