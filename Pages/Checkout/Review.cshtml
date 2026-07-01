@@ -8,6 +8,11 @@
 <div class="container py-4">
     <h1 class="h3 mb-4">Revise sua compra</h1>
 
+    @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+    {
+        <div class="alert alert-success">@Model.SuccessMessage</div>
+    }
+
     <div asp-validation-summary="All" class="text-danger"></div>
 
     <div class="row g-4">
@@ -19,16 +24,18 @@
                 {
                     <div class="d-flex justify-content-between border-bottom py-3">
                         <div>
-                            <strong>@item.Title</strong>
+                            <strong>SKU @item.SkuId</strong>
                             <div class="text-muted">Quantidade: @item.Quantity</div>
                         </div>
-                        <span>@item.TotalPrice.ToString("C")</span>
                     </div>
                 }
 
                 <h2 class="h5 mt-4">Entrega</h2>
                 <div>@Model.Checkout.SelectedShipping.Mode</div>
-                <strong>Previsão: @Model.Checkout.SelectedShipping.EstimatedDeliveryDate.ToString("dd/MM/yyyy")</strong>
+                @if (Model.Checkout.SelectedShipping.EstimatedDeliveryDate is DateOnly estimatedDeliveryDate)
+                {
+                    <strong>Previsão: @estimatedDeliveryDate.ToString("dd/MM/yyyy")</strong>
+                }
             </section>
         </div>
 
@@ -55,10 +62,8 @@
 
                 <form method="post" asp-page-handler="Confirm">
                     <input asp-for="Input.CheckoutId" type="hidden" />
-                    <input asp-for="Input.ShippingPromiseId" type="hidden" />
-                    <input asp-for="Input.PricingQuoteId" type="hidden" />
                     <input asp-for="Input.IdempotencyKey" type="hidden" />
-                    <input asp-for="Input.PaymentMethodToken" type="hidden" value="payment-token-demo" />
+                    <input asp-for="Input.PaymentIntentId" type="hidden" />
 
                     <button type="submit" class="btn btn-primary btn-lg w-100">Confirmar compra</button>
                 </form>
