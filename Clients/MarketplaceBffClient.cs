@@ -104,7 +104,7 @@ public sealed class MarketplaceBffClient : IMarketplaceBffClient
             cancellationToken);
     }
 
-    public async Task<ConfirmCheckoutResponse> ConfirmCheckoutAsync(
+    public async Task<CheckoutPageResponse> ConfirmCheckoutAsync(
         ConfirmCheckoutInput input,
         CancellationToken cancellationToken)
     {
@@ -112,16 +112,12 @@ public sealed class MarketplaceBffClient : IMarketplaceBffClient
             HttpMethod.Post,
             $"/api/web/v1/checkouts/{input.CheckoutId}/confirm")
         {
-            Content = JsonContent.Create(
-                new ConfirmCheckoutRequest(
-                    input.ShippingPromiseId,
-                    input.PricingQuoteId,
-                    input.PaymentMethodToken))
+            Content = JsonContent.Create(new ConfirmCheckoutRequest(input.PaymentIntentId))
         };
 
         request.Headers.Add("Idempotency-Key", input.IdempotencyKey);
 
-        return await SendAsync<ConfirmCheckoutResponse>(request, cancellationToken);
+        return await SendAsync<CheckoutPageResponse>(request, cancellationToken);
     }
 
     public Task<OrderPageResponse?> GetOrderAsync(
