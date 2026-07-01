@@ -75,7 +75,7 @@
         <form method="post" asp-page-handler="Cancel">
             <input asp-for="Id" type="hidden" />
             <input asp-for="CancellationReason" type="hidden" />
-            <button type="submit" class="btn btn-outline-danger">Solicitar cancelamento</button>
+            <button type="submit" data-loading-text="Cancelando..." class="btn btn-outline-danger">Solicitar cancelamento</button>
         </form>
     }
 </div>
