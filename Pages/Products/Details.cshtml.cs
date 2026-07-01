@@ -7,11 +7,17 @@ namespace Marketplace.Web.Pages.Products;
 
 public sealed class DetailsModel : PageModel
 {
-    private readonly IMarketplaceBffClient _bffClient;
+    private static readonly Guid FallbackDemoBuyerId = Guid.Parse("11111111-1111-1111-1111-111111111111");
 
-    public DetailsModel(IMarketplaceBffClient bffClient)
+    private readonly IMarketplaceBffClient _bffClient;
+    private readonly Guid _demoBuyerId;
+
+    public DetailsModel(IMarketplaceBffClient bffClient, IConfiguration configuration)
     {
         _bffClient = bffClient;
+        _demoBuyerId = Guid.TryParse(configuration["Checkout:DemoBuyerId"], out var configuredBuyerId)
+            ? configuredBuyerId
+            : FallbackDemoBuyerId;
     }
 
     [BindProperty(SupportsGet = true)]
@@ -57,14 +63,19 @@ public sealed class DetailsModel : PageModel
 
         var checkout = await _bffClient.CreateCheckoutAsync(
             new CreateCheckoutRequest(
+                _demoBuyerId,
+                ProductPage.Product.SellerId,
+                new ShippingAddressRequest(
+                    normalizedZipCode,
+                    string.Empty,
+                    string.Empty,
+                    "BR"),
                 [
                     new CreateCheckoutItemRequest(
                         ProductPage.Product.SkuId,
-                        ProductPage.Product.SellerId,
-                        Quantity)
-                ],
-                normalizedZipCode,
-                ProductPage.Shipping.PromiseId),
+                        Quantity,
+                        ProductPage.Product.Price)
+                ]),
             Guid.NewGuid().ToString("N"),
             cancellationToken);
 
