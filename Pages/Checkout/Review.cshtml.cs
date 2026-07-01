@@ -20,6 +20,9 @@ public sealed class ReviewModel : PageModel
     [BindProperty]
     public ConfirmCheckoutInput Input { get; set; } = new();
 
+    [TempData]
+    public string? SuccessMessage { get; set; }
+
     public CheckoutPageResponse Checkout { get; private set; } = default!;
 
     public async Task<IActionResult> OnGetAsync(CancellationToken cancellationToken)
@@ -34,8 +37,7 @@ public sealed class ReviewModel : PageModel
         Input = new ConfirmCheckoutInput
         {
             CheckoutId = Checkout.CheckoutId,
-            ShippingPromiseId = Checkout.SelectedShipping.PromiseId,
-            PricingQuoteId = Checkout.SelectedShipping.PricingQuoteId,
+            PaymentIntentId = $"pi_demo_{Checkout.CheckoutId:N}",
             IdempotencyKey = Guid.NewGuid().ToString("N")
         };
 
@@ -54,7 +56,8 @@ public sealed class ReviewModel : PageModel
         {
             var response = await _bffClient.ConfirmCheckoutAsync(Input, cancellationToken);
 
-            return RedirectToPage("/Orders/Details", new { id = response.OrderId });
+            SuccessMessage = "Checkout confirmado com sucesso.";
+            return RedirectToPage("/Checkout/Review", new { checkoutId = response.CheckoutId });
         }
         catch (BffApiException exception)
         {
