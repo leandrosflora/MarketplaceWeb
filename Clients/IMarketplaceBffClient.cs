@@ -35,7 +35,7 @@ public interface IMarketplaceBffClient
         Guid checkoutId,
         CancellationToken cancellationToken);
 
-    Task<ConfirmCheckoutResponse> ConfirmCheckoutAsync(
+    Task<CheckoutPageResponse> ConfirmCheckoutAsync(
         ConfirmCheckoutInput input,
         CancellationToken cancellationToken);
 
