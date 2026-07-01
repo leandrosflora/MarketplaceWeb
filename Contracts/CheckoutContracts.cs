@@ -13,27 +13,31 @@ public sealed record CheckoutPageResponse(
 
 public sealed record CheckoutItemResponse(
     Guid SkuId,
-    string Title,
-    int Quantity,
-    decimal UnitPrice,
-    decimal TotalPrice);
+    int Quantity);
 
 public sealed record ShippingOptionResponse(
-    string PromiseId,
-    Guid PricingQuoteId,
-    string Mode,
-    DateOnly EstimatedDeliveryDate,
-    decimal Price);
+    string? PromiseId,
+    string? Mode,
+    string? Carrier,
+    DateOnly? EstimatedDeliveryDate,
+    decimal Cost);
 
 public sealed record CreateCheckoutRequest(
-    IReadOnlyList<CreateCheckoutItemRequest> Items,
+    Guid BuyerId,
+    Guid SellerId,
+    ShippingAddressRequest ShippingAddress,
+    IReadOnlyList<CreateCheckoutItemRequest> Items);
+
+public sealed record ShippingAddressRequest(
     string ZipCode,
-    string? SelectedShippingPromiseId);
+    string City,
+    string State,
+    string Country);
 
 public sealed record CreateCheckoutItemRequest(
     Guid SkuId,
-    Guid SellerId,
-    int Quantity);
+    int Quantity,
+    decimal UnitPrice);
 
 public sealed class ConfirmCheckoutInput
 {
@@ -41,24 +45,10 @@ public sealed class ConfirmCheckoutInput
     public Guid CheckoutId { get; set; }
 
     [Required]
-    public string ShippingPromiseId { get; set; } = string.Empty;
-
-    [Required]
-    public Guid PricingQuoteId { get; set; }
-
-    [Required]
-    public string PaymentMethodToken { get; set; } = string.Empty;
+    public string PaymentIntentId { get; set; } = string.Empty;
 
     [Required]
     public string IdempotencyKey { get; set; } = string.Empty;
 }
 
-public sealed record ConfirmCheckoutRequest(
-    string ShippingPromiseId,
-    Guid PricingQuoteId,
-    string PaymentMethodToken);
-
-public sealed record ConfirmCheckoutResponse(
-    Guid CheckoutId,
-    Guid OrderId,
-    string Status);
+public sealed record ConfirmCheckoutRequest(string PaymentIntentId);
