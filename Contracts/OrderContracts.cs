@@ -41,3 +41,13 @@ public sealed record ShipmentLabelResponse(
     Guid ShipmentId,
     string LabelUrl,
     DateTimeOffset ExpiresAt);
+
+public sealed record OrderListItemResponse(
+    Guid Id,
+    string Status,
+    decimal ItemsTotal,
+    decimal ShippingPrice,
+    decimal TotalAmount,
+    string Currency,
+    DateTimeOffset CreatedAt,
+    Guid? ShipmentId);

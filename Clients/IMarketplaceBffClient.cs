@@ -43,6 +43,10 @@ public interface IMarketplaceBffClient
         Guid orderId,
         CancellationToken cancellationToken);
 
+    Task<IReadOnlyList<OrderListItemResponse>> ListOrdersAsync(
+        Guid buyerId,
+        CancellationToken cancellationToken);
+
     Task CancelOrderAsync(
         Guid orderId,
         string reason,

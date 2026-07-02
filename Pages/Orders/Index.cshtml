@@ -8,8 +8,67 @@
 <div class="container py-4">
     <section class="marketplace-card p-4">
         <h1 class="h3">Meus pedidos</h1>
-        <p class="text-muted mb-0">
+        <p class="text-muted">
             Informe o identificador de um pedido para acessar a página de detalhes e rastreamento.
         </p>
+
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <form method="post" class="row g-2 align-items-start">
+            <div class="col-sm-8 col-md-6">
+                <label asp-for="OrderId" class="form-label">Identificador do pedido</label>
+                <input asp-for="OrderId"
+                       class="form-control"
+                       placeholder="00000000-0000-0000-0000-000000000000" />
+            </div>
+            <div class="col-sm-4 col-md-auto align-self-end">
+                <button type="submit" data-loading-text="Buscando..." class="btn btn-primary w-100">
+                    Ver pedido
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <section class="mt-4">
+        <h2 class="h5 mb-3">Todos os pedidos</h2>
+
+        @if (Model.Orders.Count == 0)
+        {
+            <div class="marketplace-card p-4 text-center text-muted">
+                Nenhum pedido encontrado.
+            </div>
+        }
+        else
+        {
+            <div class="marketplace-card">
+                <table class="table mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th>Pedido</th>
+                            <th>Data</th>
+                            <th>Status</th>
+                            <th class="text-end">Total</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model.Orders)
+                        {
+                            <tr>
+                                <td class="text-muted small">@order.Id</td>
+                                <td>@order.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                                <td><span class="badge bg-primary">@order.Status</span></td>
+                                <td class="text-end">@order.TotalAmount.ToString("C")</td>
+                                <td class="text-end">
+                                    <a asp-page="/Orders/Details" asp-route-id="@order.Id" class="btn btn-sm btn-outline-primary">
+                                        Ver detalhes
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
     </section>
 </div>

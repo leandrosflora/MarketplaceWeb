@@ -129,6 +129,17 @@ public sealed class MarketplaceBffClient : IMarketplaceBffClient
             cancellationToken);
     }
 
+    public async Task<IReadOnlyList<OrderListItemResponse>> ListOrdersAsync(
+        Guid buyerId,
+        CancellationToken cancellationToken)
+    {
+        var orders = await GetOrNullAsync<IReadOnlyList<OrderListItemResponse>>(
+            $"/api/web/v1/orders?buyerId={buyerId}",
+            cancellationToken);
+
+        return orders ?? [];
+    }
+
     public async Task CancelOrderAsync(
         Guid orderId,
         string reason,
