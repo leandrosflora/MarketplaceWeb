@@ -8,13 +8,13 @@
 <div class="container py-4" data-jaeger-base-url="@Model.JaegerBaseUrl">
     <div class="d-flex align-items-center justify-content-between mb-3">
         <div>
-            <p class="text-uppercase text-muted fw-semibold mb-1">Operações</p>
+            <p class="marketplace-eyebrow mb-1">Operações</p>
             <h1 class="h3 mb-0">Order Monitor</h1>
         </div>
         <span class="text-muted small">Atualiza automaticamente a cada 4s · última atualização: <span id="last-refresh">-</span></span>
     </div>
 
-    <form method="get" class="row g-2 align-items-end mb-4">
+    <form method="get" class="marketplace-card p-3 row g-2 align-items-end mb-4">
         <div class="col-auto">
             <label class="form-label small mb-1">Status</label>
             <input class="form-control form-control-sm" name="Status" value="@Model.Status" placeholder="ex: PaymentRejected" />
@@ -58,7 +58,7 @@
         <div class="alert alert-danger" role="alert">@Model.ErrorMessage</div>
     }
 
-    <div class="table-responsive">
+    <div class="marketplace-panel table-responsive">
         <table class="table table-sm table-hover align-middle" id="journeys-table">
             <thead>
                 <tr>
