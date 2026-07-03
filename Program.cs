@@ -30,6 +30,18 @@ builder.Services
             new MediaTypeWithQualityHeaderValue("application/json"));
     })
     .AddHttpMessageHandler<CorrelationIdHandler>();
+
+builder.Services
+    .AddHttpClient<IOrderVisibilityClient, OrderVisibilityClient>(client =>
+    {
+        var baseUrl = builder.Configuration["OrderVisibility:BaseUrl"]
+            ?? throw new InvalidOperationException("OrderVisibility BaseUrl is not configured");
+
+        client.BaseAddress = new Uri(baseUrl);
+        client.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json"));
+    })
+    .AddHttpMessageHandler<CorrelationIdHandler>();
     //.AddStandardResilienceHandler(options =>
     //{
     //    options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(50);

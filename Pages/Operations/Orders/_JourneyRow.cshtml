@@ -1,0 +1,28 @@
+@model Marketplace.Web.Contracts.OrderJourneySummary
+@{
+    var jaegerBaseUrl = ViewData["JaegerBaseUrl"] as string ?? "http://localhost:16686";
+    var traceUrl = string.IsNullOrEmpty(Model.RootTraceId)
+        ? $"{jaegerBaseUrl}/search?tags={Uri.EscapeDataString($$"""{"correlation.id":"{{Model.CorrelationId}}"}""")}"
+        : $"{jaegerBaseUrl}/trace/{Model.RootTraceId}";
+}
+<tr data-journey-id="@Model.Id" class="@(Model.HasError ? "table-danger" : Model.SecondsSinceLastEvent > 60 ? "table-warning" : "")">
+    <td>
+        @if (Model.OrderId is not null)
+        {
+            <a asp-page="/Operations/Orders/Detail" asp-route-orderId="@Model.OrderId">@Model.OrderId</a>
+        }
+        else
+        {
+            <span class="text-muted">(sem orderId ainda)</span>
+        }
+    </td>
+    <td class="text-truncate" style="max-width: 140px;" title="@Model.CheckoutId">@Model.CheckoutId</td>
+    <td><span class="badge text-bg-secondary">@Model.CurrentStatus</span></td>
+    <td>@Model.CurrentStep</td>
+    <td>@Model.LastEventType</td>
+    <td>@Math.Round(Model.SecondsSinceLastEvent)s</td>
+    <td>@(Model.HasError ? "⚠ " + Model.ErrorReason : "")</td>
+    <td class="text-truncate" style="max-width: 140px;" title="@Model.CorrelationId">@Model.CorrelationId</td>
+    <td><a href="@traceUrl" target="_blank" rel="noopener">Ver trace</a></td>
+    <td>@Model.UpdatedAt.ToLocalTime().ToString("HH:mm:ss")</td>
+</tr>

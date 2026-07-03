@@ -1,0 +1,79 @@
+@page "/operations/orders/detail/{orderId:guid}"
+@model Marketplace.Web.Pages.Operations.Orders.DetailModel
+@{
+    ViewData["Title"] = "Order Monitor · Detalhe";
+}
+
+<div class="container py-4">
+    <p class="text-uppercase text-muted fw-semibold mb-1">
+        <a href="/operations/orders" class="text-decoration-none">← Order Monitor</a>
+    </p>
+    <h1 class="h3 mb-4">Pedido @Model.OrderId</h1>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="alert alert-warning" role="alert">@Model.ErrorMessage</div>
+    }
+    else if (Model.Journey is not null)
+    {
+        var journey = Model.Journey;
+        <div class="row g-3 mb-4">
+            <div class="col-md-3"><div class="text-muted small">Status atual</div><div class="fw-semibold">@journey.CurrentStatus</div></div>
+            <div class="col-md-3"><div class="text-muted small">Checkout</div><div class="fw-semibold">@journey.CheckoutId</div></div>
+            <div class="col-md-3"><div class="text-muted small">Correlation ID</div><div class="fw-semibold">@journey.CorrelationId</div></div>
+            <div class="col-md-3">
+                <div class="text-muted small">Trace</div>
+                <a href="@Model.TraceUrl(journey.RootTraceId, journey.CorrelationId)" target="_blank" rel="noopener">Ver trace</a>
+            </div>
+        </div>
+
+        @if (journey.HasError)
+        {
+            <div class="alert alert-danger">⚠ @journey.ErrorReason</div>
+        }
+
+        <h2 class="h5 mb-3">Timeline</h2>
+        <div class="list-group mb-4">
+            @foreach (var evt in Model.Events)
+            {
+                <details class="list-group-item">
+                    <summary class="d-flex justify-content-between align-items-center" style="cursor:pointer;">
+                        <span>
+                            <strong>@evt.EventType</strong>
+                            @if (evt.StatusBefore is not null)
+                            {
+                                <span class="text-muted small">(@evt.StatusBefore → @evt.StatusAfter)</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">(→ @evt.StatusAfter)</span>
+                            }
+                        </span>
+                        <span class="text-muted small">@evt.OccurredAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</span>
+                    </summary>
+                    <div class="pt-3">
+                        <dl class="row small mb-0">
+                            <dt class="col-sm-3">Tópico</dt><dd class="col-sm-9">@evt.Topic (partition @evt.Partition, offset @evt.OffsetValue)</dd>
+                            <dt class="col-sm-3">Producer</dt><dd class="col-sm-9">@evt.ServiceName</dd>
+                            <dt class="col-sm-3">Trace / Span</dt>
+                            <dd class="col-sm-9">
+                                @if (evt.TraceId is not null)
+                                {
+                                    <a href="@Model.TraceUrl(evt.TraceId, evt.CorrelationId)" target="_blank" rel="noopener">@evt.TraceId</a>
+                                    <text> / @evt.SpanId</text>
+                                }
+                                else
+                                {
+                                    <a href="@Model.TraceUrl(null, evt.CorrelationId)" target="_blank" rel="noopener">buscar por correlationId</a>
+                                }
+                            </dd>
+                            <dt class="col-sm-3">Consumido em</dt><dd class="col-sm-9">@evt.ConsumedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</dd>
+                            <dt class="col-sm-3">Payload</dt>
+                            <dd class="col-sm-9"><pre class="bg-light p-2 rounded small mb-0">@evt.PayloadJson</pre></dd>
+                        </dl>
+                    </div>
+                </details>
+            }
+        </div>
+    }
+</div>
