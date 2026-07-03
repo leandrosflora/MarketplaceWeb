@@ -15,7 +15,7 @@
 
         <div class="col-lg-5">
             <section class="marketplace-card p-4">
-                <div class="text-muted small">@Model.ProductPage.Product.Category</div>
+                <div class="marketplace-eyebrow">@Model.ProductPage.Product.Category</div>
                 <h1 class="h3 mt-2">@Model.ProductPage.Product.Title</h1>
                 <div class="product-price mt-4">@Model.ProductPage.Product.Price.ToString("C")</div>
 
@@ -59,7 +59,7 @@
                     <button type="submit"
                             asp-page-handler="Buy"
                             data-loading-text="Processando compra..."
-                            class="btn btn-primary btn-lg w-100 mt-4">
+                            class="btn btn-success btn-lg w-100 mt-4">
                         Comprar agora
                     </button>
                 </form>
