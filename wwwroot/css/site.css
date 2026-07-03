@@ -1,9 +1,22 @@
 :root {
     --marketplace-background: #f5f5f5;
     --marketplace-surface: #ffffff;
-    --marketplace-border: #e5e5e5;
-    --marketplace-primary: #2563eb;
-    --marketplace-header: #f8df5a;
+    --marketplace-surface-soft: #fbfbfb;
+    --marketplace-border: #e6e8ec;
+    --marketplace-border-strong: #d7dbe2;
+    --marketplace-primary: #3483fa;
+    --marketplace-primary-hover: #2968c8;
+    --marketplace-primary-soft: #e8f1ff;
+    --marketplace-secondary: #00a650;
+    --marketplace-secondary-hover: #008f45;
+    --marketplace-warning: #fff159;
+    --marketplace-header: #fff159;
+    --marketplace-text: #333333;
+    --marketplace-muted: #737373;
+    --marketplace-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    --marketplace-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --marketplace-radius: 14px;
+    --marketplace-radius-sm: 10px;
 }
 
 html {
@@ -13,54 +26,201 @@ html {
 }
 
 body {
+    min-height: 100vh;
     margin-bottom: 60px;
-    background: var(--marketplace-background);
-    color: #222;
+    background:
+        radial-gradient(circle at top left, rgba(255, 241, 89, 0.22), transparent 30rem),
+        var(--marketplace-background);
+    color: var(--marketplace-text);
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+main {
+    padding-bottom: 2rem;
 }
 
 .btn:focus,
 .btn:active:focus,
 .btn-link.nav-link:focus,
 .form-control:focus,
+.form-select:focus,
 .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    border-color: var(--marketplace-primary);
+    box-shadow: 0 0 0 0.2rem rgba(52, 131, 250, 0.2);
+}
+
+.btn {
+    border-radius: 10px;
+    font-weight: 600;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background: var(--marketplace-primary);
+    border-color: var(--marketplace-primary);
+    box-shadow: 0 6px 14px rgba(52, 131, 250, 0.22);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background: var(--marketplace-primary-hover);
+    border-color: var(--marketplace-primary-hover);
+}
+
+.btn-success {
+    background: var(--marketplace-secondary);
+    border-color: var(--marketplace-secondary);
+}
+
+.btn-success:hover,
+.btn-success:focus {
+    background: var(--marketplace-secondary-hover);
+    border-color: var(--marketplace-secondary-hover);
+}
+
+.btn-outline-primary {
+    color: var(--marketplace-primary);
+    border-color: rgba(52, 131, 250, 0.45);
+    background: var(--marketplace-primary-soft);
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    color: #fff;
+    background: var(--marketplace-primary);
+    border-color: var(--marketplace-primary);
 }
 
 .marketplace-header {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
     background: var(--marketplace-header);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .marketplace-logo {
     color: #222;
     font-size: 1.35rem;
-    font-weight: 700;
+    font-weight: 800;
+    letter-spacing: -0.03em;
     text-decoration: none;
 }
 
-.marketplace-card {
+.marketplace-logo:hover {
+    color: #111;
+}
+
+.marketplace-header .form-control {
+    border: 0;
+    border-radius: 10px 0 0 10px;
+    box-shadow: var(--marketplace-shadow-sm);
+}
+
+.marketplace-header .input-group .btn {
+    border: 0;
+    border-radius: 0 10px 10px 0;
+    color: var(--marketplace-primary);
+    background: #fff;
+    box-shadow: var(--marketplace-shadow-sm);
+}
+
+.marketplace-header .btn-outline-light {
+    color: #333;
+    border-color: rgba(0, 0, 0, 0.12);
+    background: rgba(255, 255, 255, 0.35);
+}
+
+.marketplace-card,
+.marketplace-panel {
     background: var(--marketplace-surface);
     border: 1px solid var(--marketplace-border);
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border-radius: var(--marketplace-radius);
+    box-shadow: var(--marketplace-shadow-sm);
+}
+
+.marketplace-panel {
+    overflow: hidden;
+}
+
+.marketplace-hero {
+    background: linear-gradient(135deg, #fff 0%, #fffbe0 52%, #e8f1ff 100%);
+    border: 1px solid rgba(52, 131, 250, 0.12);
+}
+
+.marketplace-eyebrow {
+    color: var(--marketplace-primary);
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.form-control,
+.form-select {
+    border-color: var(--marketplace-border-strong);
+    border-radius: 10px;
+}
+
+.table {
+    --bs-table-hover-bg: #f7fbff;
+    color: var(--marketplace-text);
+}
+
+.table thead th {
+    background: var(--marketplace-surface-soft);
+    border-bottom: 1px solid var(--marketplace-border);
+    color: var(--marketplace-muted);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.table tbody td {
+    border-color: var(--marketplace-border);
+}
+
+.badge {
+    border-radius: 999px;
+    font-weight: 700;
+    padding: 0.45em 0.7em;
+}
+
+.bg-primary,
+.text-bg-primary {
+    background-color: var(--marketplace-primary) !important;
+}
+
+.text-bg-success,
+.bg-success {
+    background-color: var(--marketplace-secondary) !important;
 }
 
 .product-image-placeholder {
     min-height: 500px;
     display: grid;
     place-items: center;
-    color: #777;
+    color: var(--marketplace-muted);
+    background: linear-gradient(135deg, #f8fafc, #ffffff);
 }
 
 .product-price {
     font-size: 2.25rem;
-    font-weight: 400;
+    font-weight: 300;
+    letter-spacing: -0.04em;
 }
 
 .shipping-result {
     padding: 1rem;
-    background: #f3f8ff;
-    border-radius: 8px;
+    background: var(--marketplace-primary-soft);
+    border: 1px solid rgba(52, 131, 250, 0.18);
+    border-radius: var(--marketplace-radius-sm);
 }
 
 .tracking-event {
@@ -76,6 +236,7 @@ body {
     margin-top: 5px;
     border-radius: 50%;
     background: var(--marketplace-primary);
+    box-shadow: 0 0 0 4px var(--marketplace-primary-soft);
 }
 
 .login-card {
@@ -84,15 +245,53 @@ body {
 
 .product-search-card {
     position: relative;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .product-search-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
+    border-color: rgba(52, 131, 250, 0.35);
+    box-shadow: var(--marketplace-shadow);
 }
 
 .product-search-price {
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: 400;
+    letter-spacing: -0.03em;
+}
+
+.marketplace-list-item {
+    border-bottom: 1px solid var(--marketplace-border);
+}
+
+.marketplace-list-item:last-child {
+    border-bottom: 0;
+}
+
+.pagination .page-link {
+    color: var(--marketplace-primary);
+    border-color: var(--marketplace-border);
+    border-radius: 9px;
+    margin: 0 0.15rem;
+}
+
+.pagination .active .page-link,
+.page-item.active .page-link {
+    background: var(--marketplace-primary);
+    border-color: var(--marketplace-primary);
+}
+
+.footer {
+    background: #fff;
+    line-height: 60px;
+}
+
+@media (max-width: 767.98px) {
+    .marketplace-header {
+        position: static;
+    }
+
+    .marketplace-header .text-end {
+        text-align: start !important;
+    }
 }
