@@ -32,6 +32,19 @@ builder.Services
     .AddHttpMessageHandler<CorrelationIdHandler>();
 
 builder.Services
+    .AddHttpClient<IMarketplaceAdminBffClient, MarketplaceAdminBffClient>(client =>
+    {
+        var baseUrl = builder.Configuration["AdminBff:BaseUrl"]
+            ?? throw new InvalidOperationException("Admin BFF BaseUrl is not configured");
+
+        client.BaseAddress = new Uri(baseUrl);
+        client.Timeout = Timeout.InfiniteTimeSpan;
+        client.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json"));
+    })
+    .AddHttpMessageHandler<CorrelationIdHandler>();
+
+builder.Services
     .AddHttpClient<IOrderVisibilityClient, OrderVisibilityClient>(client =>
     {
         var baseUrl = builder.Configuration["OrderVisibility:BaseUrl"]
