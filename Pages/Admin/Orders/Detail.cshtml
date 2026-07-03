@@ -1,0 +1,99 @@
+@page "/admin/orders/{orderId:guid}"
+@model Marketplace.Web.Pages.Admin.Orders.DetailModel
+@{
+    ViewData["Title"] = "Admin - Detalhe do Pedido";
+}
+
+<div class="container py-4">
+    <p class="text-uppercase text-muted fw-semibold mb-1">Administração · Operações</p>
+    <h1 class="h3 mb-4">Pedido @Model.OrderId</h1>
+
+    @if (Model.SuccessMessage is not null)
+    {
+        <div class="alert alert-success">@Model.SuccessMessage</div>
+    }
+    @if (Model.ErrorMessage is not null)
+    {
+        <div class="alert alert-warning">@Model.ErrorMessage</div>
+    }
+
+    @if (Model.Order is { } order)
+    {
+        <div class="row">
+            <div class="col-lg-7">
+                <div class="card mb-3">
+                    <div class="card-header">Dados Gerais</div>
+                    <div class="card-body">
+                        <dl class="row small mb-0">
+                            <dt class="col-4">Status</dt><dd class="col-8">@order.Status</dd>
+                            <dt class="col-4">Buyer</dt><dd class="col-8"><code>@order.BuyerId</code></dd>
+                            <dt class="col-4">Seller</dt><dd class="col-8"><code>@order.SellerId</code></dd>
+                            <dt class="col-4">Checkout</dt><dd class="col-8"><code>@order.CheckoutId</code></dd>
+                            <dt class="col-4">Itens</dt><dd class="col-8">@order.Currency @order.ItemsTotal</dd>
+                            <dt class="col-4">Frete</dt><dd class="col-8">@order.Currency @order.ShippingPrice</dd>
+                            <dt class="col-4">Total</dt><dd class="col-8">@order.Currency @order.TotalAmount</dd>
+                            <dt class="col-4">Shipment</dt>
+                            <dd class="col-8">
+                                @if (order.ShipmentId is { } shipmentId)
+                                {
+                                    <a asp-page="/Admin/Shipments/Index" asp-route-orderId="@order.Id"><code>@shipmentId</code></a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </dd>
+                            <dt class="col-4">Criado em</dt><dd class="col-8">@order.CreatedAt</dd>
+                            <dt class="col-4">Atualizado em</dt><dd class="col-8">@order.UpdatedAt</dd>
+                            <dt class="col-4">Confirmado em</dt><dd class="col-8">@order.ConfirmedAt</dd>
+                            <dt class="col-4">Cancelado em</dt><dd class="col-8">@order.CancelledAt</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header">Itens</div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm mb-0">
+                            <thead><tr><th>SKU</th><th>Título</th><th>Qtd</th><th>Preço Unit.</th><th>Total</th></tr></thead>
+                            <tbody>
+                                @foreach (var item in order.Items)
+                                {
+                                    <tr>
+                                        <td><code>@item.SkuId</code></td>
+                                        <td>@item.Title</td>
+                                        <td>@item.Quantity</td>
+                                        <td>@order.Currency @item.UnitPrice</td>
+                                        <td>@order.Currency @item.TotalPrice</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="card">
+                    <div class="card-header">Cancelar Pedido</div>
+                    <div class="card-body">
+                        @if (order.Status is "Cancelled" or "Confirmed")
+                        {
+                            <p class="text-muted small mb-0">
+                                Pedidos com status <strong>@order.Status</strong> não podem ser cancelados por aqui.
+                            </p>
+                        }
+                        else
+                        {
+                            <form method="post" asp-page-handler="Cancel" asp-route-orderId="@order.Id">
+                                <label class="form-label small">Motivo</label>
+                                <textarea class="form-control" asp-for="CancelReason" required></textarea>
+                                <button type="submit" class="btn btn-outline-danger mt-2">Cancelar Pedido</button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

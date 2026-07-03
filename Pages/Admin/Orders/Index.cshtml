@@ -1,0 +1,66 @@
+@page "/admin/orders"
+@model Marketplace.Web.Pages.Admin.Orders.IndexModel
+@{
+    ViewData["Title"] = "Admin - Pedidos";
+}
+
+<div class="container py-4">
+    <p class="text-uppercase text-muted fw-semibold mb-1">Administração · Operações</p>
+    <h1 class="h3 mb-4">Pedidos</h1>
+
+    @if (Model.ErrorMessage is not null)
+    {
+        <div class="alert alert-warning">@Model.ErrorMessage</div>
+    }
+
+    <div class="card mb-4">
+        <div class="card-header">Buscar</div>
+        <div class="card-body">
+            <form method="get" class="row g-2">
+                <div class="col-3">
+                    <label class="form-label small">Buyer ID</label>
+                    <input class="form-control" name="buyerId" value="@Model.BuyerId" />
+                </div>
+                <div class="col-3">
+                    <label class="form-label small">Seller ID</label>
+                    <input class="form-control" name="sellerId" value="@Model.SellerId" />
+                </div>
+                <div class="col-3">
+                    <label class="form-label small">Status</label>
+                    <input class="form-control" name="status" value="@Model.Status" placeholder="Confirmed, Cancelled..." />
+                </div>
+                <div class="col-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <table class="table table-sm table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Buyer</th>
+                <th>Seller</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>Criado em</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model.Orders)
+            {
+                <tr>
+                    <td><code>@order.Id</code></td>
+                    <td><code>@order.BuyerId</code></td>
+                    <td><code>@order.SellerId</code></td>
+                    <td>@order.Status</td>
+                    <td>@order.Currency @order.TotalAmount</td>
+                    <td>@order.CreatedAt</td>
+                    <td><a asp-page="/Admin/Orders/Detail" asp-route-orderId="@order.Id">Detalhes</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

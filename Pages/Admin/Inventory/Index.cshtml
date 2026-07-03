@@ -1,0 +1,105 @@
+@page "/admin/inventory"
+@model Marketplace.Web.Pages.Admin.Inventory.IndexModel
+@{
+    ViewData["Title"] = "Admin - Estoque";
+}
+
+<div class="container py-4">
+    <p class="text-uppercase text-muted fw-semibold mb-1">Administração · Estoque</p>
+    <h1 class="h3 mb-4">Estoque</h1>
+
+    @if (Model.SuccessMessage is not null)
+    {
+        <div class="alert alert-success">@Model.SuccessMessage</div>
+    }
+    @if (Model.ErrorMessage is not null)
+    {
+        <div class="alert alert-warning">@Model.ErrorMessage</div>
+    }
+    @if (!ModelState.IsValid)
+    {
+        <div class="alert alert-danger" asp-validation-summary="All"></div>
+    }
+
+    <form method="get" class="row g-2 align-items-end mb-4">
+        <div class="col-auto">
+            <label class="form-label small mb-1">Seller ID</label>
+            <input class="form-control form-control-sm" name="SellerId" value="@Model.SellerId" />
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">SKU ID</label>
+            <input class="form-control form-control-sm" name="SkuId" value="@Model.SkuId" />
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">Fulfillment Center ID</label>
+            <input class="form-control form-control-sm" name="FulfillmentCenterId" value="@Model.FulfillmentCenterId" />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+        </div>
+    </form>
+
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Seller</th>
+                <th>SKU</th>
+                <th>Fulfillment Center</th>
+                <th class="text-end">Total</th>
+                <th class="text-end">Reservado</th>
+                <th class="text-end">Disponível</th>
+                <th>Atualizado</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td class="small">@item.SellerId</td>
+                    <td class="small">@item.SkuId</td>
+                    <td class="small">@item.FulfillmentCenterId</td>
+                    <td class="text-end">@item.OnHandQuantity</td>
+                    <td class="text-end">@item.ReservedQuantity</td>
+                    <td class="text-end">@item.AvailableQuantity</td>
+                    <td class="small">@item.UpdatedAt</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="card" style="max-width: 560px;">
+        <div class="card-header">Ajustar Estoque</div>
+        <div class="card-body">
+            <form method="post" asp-page-handler="Adjust">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label small">Seller ID</label>
+                        <input class="form-control" asp-for="AdjustInput.SellerId" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">SKU ID</label>
+                        <input class="form-control" asp-for="AdjustInput.SkuId" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">Fulfillment Center ID</label>
+                        <input class="form-control" asp-for="AdjustInput.FulfillmentCenterId" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">Quantidade (+/-)</label>
+                        <input class="form-control" type="number" asp-for="AdjustInput.QuantityDelta" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">Motivo</label>
+                        <input class="form-control" asp-for="AdjustInput.Reason" placeholder="ex: INITIAL_LOAD" required />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label small">Descrição (opcional)</label>
+                        <input class="form-control" asp-for="AdjustInput.Description" />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3">Ajustar Estoque</button>
+            </form>
+        </div>
+    </div>
+</div>

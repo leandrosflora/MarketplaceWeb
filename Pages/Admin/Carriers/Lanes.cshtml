@@ -1,0 +1,91 @@
+@page "/admin/carriers/{carrierCode}/lanes"
+@model Marketplace.Web.Pages.Admin.Carriers.LanesModel
+@{
+    ViewData["Title"] = "Admin - Lanes Da Transportadora";
+}
+
+<div class="container py-4">
+    <p class="text-uppercase text-muted fw-semibold mb-1">Administração · Transportadoras</p>
+    <h1 class="h3 mb-4">Lanes · @Model.CarrierCode</h1>
+
+    @if (Model.SuccessMessage is not null)
+    {
+        <div class="alert alert-success">@Model.SuccessMessage</div>
+    }
+    @if (Model.ErrorMessage is not null)
+    {
+        <div class="alert alert-warning">@Model.ErrorMessage</div>
+    }
+    @if (!ModelState.IsValid)
+    {
+        <div class="alert alert-danger" asp-validation-summary="All"></div>
+    }
+
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Service Level</th>
+                <th>Origem</th>
+                <th>Destino</th>
+                <th>Cutoff</th>
+                <th>Ativo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var lane in Model.Lanes)
+            {
+                <tr>
+                    <td>@lane.ServiceLevelCode</td>
+                    <td class="small">@lane.OriginNodeId</td>
+                    <td class="small">@lane.DestinationNodeId</td>
+                    <td>@lane.CutoffTime</td>
+                    <td>@lane.IsActive</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="card" style="max-width: 640px;">
+        <div class="card-header">Criar Lane</div>
+        <div class="card-body">
+            <form method="post" asp-page-handler="Create">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label small">Service Level Code</label>
+                        <input class="form-control" asp-for="CreateInput.ServiceLevelCode" required />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">Timezone</label>
+                        <input class="form-control" asp-for="CreateInput.TimeZoneId" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">Origem (Node ID)</label>
+                        <input class="form-control" asp-for="CreateInput.OriginNodeId" required />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">Destino (Node ID)</label>
+                        <input class="form-control" asp-for="CreateInput.DestinationNodeId" required />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">Cutoff (HH:mm)</label>
+                        <input class="form-control" asp-for="CreateInput.CutoffTime" placeholder="14:00" required />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label small">Dias de operação</label>
+                        <div class="d-flex gap-3 flex-wrap">
+                            @foreach (var day in new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" })
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="CreateInput.OperatingDays" value="@day" id="day-@day" />
+                                    <label class="form-check-label" for="day-@day">@day</label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Criar</button>
+                <a class="btn btn-link" asp-page="/Admin/Carriers/Index">Voltar</a>
+            </form>
+        </div>
+    </div>
+</div>

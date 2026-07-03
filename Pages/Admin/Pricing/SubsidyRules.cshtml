@@ -1,0 +1,112 @@
+@page "/admin/subsidy-rules"
+@model Marketplace.Web.Pages.Admin.Pricing.SubsidyRulesModel
+@{
+    ViewData["Title"] = "Admin - Subsídios E Promoções";
+}
+
+<div class="container py-4">
+    <p class="text-uppercase text-muted fw-semibold mb-1">Administração · Pricing</p>
+    <h1 class="h3 mb-4">Subsídios E Promoções</h1>
+
+    @if (Model.SuccessMessage is not null)
+    {
+        <div class="alert alert-success">@Model.SuccessMessage</div>
+    }
+    @if (Model.ErrorMessage is not null)
+    {
+        <div class="alert alert-warning">@Model.ErrorMessage</div>
+    }
+    @if (!ModelState.IsValid)
+    {
+        <div class="alert alert-danger" asp-validation-summary="All"></div>
+    }
+
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th class="text-end">Prioridade</th>
+                <th class="text-end">Carrinho mín</th>
+                <th class="text-end">% Desconto</th>
+                <th class="text-end">% Subsídio plataforma</th>
+                <th class="text-end">% Subsídio seller</th>
+                <th class="text-end">Benefício máx</th>
+                <th>Ativo</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var rule in Model.Rules)
+            {
+                <tr>
+                    <td>@rule.Code</td>
+                    <td class="text-end">@rule.Priority</td>
+                    <td class="text-end">@rule.MinimumCartTotal</td>
+                    <td class="text-end">@rule.CustomerDiscountPercentage</td>
+                    <td class="text-end">@rule.PlatformSubsidyPercentage</td>
+                    <td class="text-end">@rule.SellerSubsidyPercentage</td>
+                    <td class="text-end">@rule.MaximumBenefit</td>
+                    <td>@rule.IsActive</td>
+                    <td>
+                        <form method="post" asp-page-handler="ToggleActive" class="d-inline">
+                            <input type="hidden" name="promotionId" value="@rule.Id" />
+                            <input type="hidden" name="isActive" value="@(!rule.IsActive)" />
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">@(rule.IsActive ? "Desativar" : "Ativar")</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="card" style="max-width: 640px;">
+        <div class="card-header">Criar Regra de Subsídio</div>
+        <div class="card-body">
+            <form method="post" asp-page-handler="Create">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label small">Código</label>
+                        <input class="form-control" asp-for="CreateInput.Code" required />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">Seller ID (opcional)</label>
+                        <input class="form-control" asp-for="CreateInput.SellerId" />
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label small">Prioridade</label>
+                        <input class="form-control" type="number" min="1" asp-for="CreateInput.Priority" />
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label small">Carrinho mínimo</label>
+                        <input class="form-control" type="number" step="0.01" asp-for="CreateInput.MinimumCartTotal" />
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label small">Benefício máximo</label>
+                        <input class="form-control" type="number" step="0.01" asp-for="CreateInput.MaximumBenefit" />
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label small">% Desconto cliente</label>
+                        <input class="form-control" type="number" step="0.01" min="0" max="100" asp-for="CreateInput.CustomerDiscountPercentage" />
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label small">% Subsídio plataforma</label>
+                        <input class="form-control" type="number" step="0.01" min="0" max="100" asp-for="CreateInput.PlatformSubsidyPercentage" />
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label small">% Subsídio seller</label>
+                        <input class="form-control" type="number" step="0.01" min="0" max="100" asp-for="CreateInput.SellerSubsidyPercentage" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">Início</label>
+                        <input class="form-control" type="datetime-local" asp-for="CreateInput.StartsAt" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">Fim</label>
+                        <input class="form-control" type="datetime-local" asp-for="CreateInput.EndsAt" />
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Criar</button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,84 @@
+@page "/admin/carriers"
+@model Marketplace.Web.Pages.Admin.Carriers.IndexModel
+@{
+    ViewData["Title"] = "Admin - Transportadoras";
+}
+
+<div class="container py-4">
+    <p class="text-uppercase text-muted fw-semibold mb-1">Administração · Transportadoras</p>
+    <h1 class="h3 mb-4">Transportadoras</h1>
+
+    @if (Model.SuccessMessage is not null)
+    {
+        <div class="alert alert-success">@Model.SuccessMessage</div>
+    }
+    @if (Model.ErrorMessage is not null)
+    {
+        <div class="alert alert-warning">@Model.ErrorMessage</div>
+    }
+    @if (!ModelState.IsValid)
+    {
+        <div class="alert alert-danger" asp-validation-summary="All"></div>
+    }
+
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nome</th>
+                <th>Status</th>
+                <th>Validação em tempo real</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var carrier in Model.Carriers)
+            {
+                <tr>
+                    <td>@carrier.Code</td>
+                    <td>@carrier.Name</td>
+                    <td>@carrier.Status</td>
+                    <td>@carrier.RequiresRealTimeValidation</td>
+                    <td>
+                        <a class="btn btn-sm btn-outline-secondary" asp-page="/Admin/Carriers/ServiceLevels" asp-route-carrierCode="@carrier.Code">Service Levels</a>
+                        <a class="btn btn-sm btn-outline-secondary" asp-page="/Admin/Carriers/Lanes" asp-route-carrierCode="@carrier.Code">Lanes</a>
+                        <form method="post" asp-page-handler="ChangeStatus" class="d-inline">
+                            <input type="hidden" name="carrierCode" value="@carrier.Code" />
+                            <select name="status" class="form-select form-select-sm d-inline-block w-auto">
+                                <option value="Active">Active</option>
+                                <option value="Degraded">Degraded</option>
+                                <option value="Suspended">Suspended</option>
+                                <option value="Maintenance">Maintenance</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">Alterar</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="card" style="max-width: 480px;">
+        <div class="card-header">Criar Transportadora</div>
+        <div class="card-body">
+            <form method="post" asp-page-handler="Create">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label small">Código</label>
+                        <input class="form-control" asp-for="CreateInput.Code" required />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">Nome</label>
+                        <input class="form-control" asp-for="CreateInput.Name" required />
+                    </div>
+                    <div class="col-12 form-check ms-2 mt-3">
+                        <input class="form-check-input" type="checkbox" asp-for="CreateInput.RequiresRealTimeValidation" />
+                        <label class="form-check-label" asp-for="CreateInput.RequiresRealTimeValidation">Requer validação em tempo real</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Criar</button>
+            </form>
+        </div>
+    </div>
+</div>

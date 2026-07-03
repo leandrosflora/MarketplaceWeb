@@ -1,0 +1,81 @@
+@page "/admin/fulfillment-centers/{fulfillmentCenterId:guid}/capacity"
+@model Marketplace.Web.Pages.Admin.FulfillmentCenters.CapacityModel
+@{
+    ViewData["Title"] = "Admin - Capacidade";
+}
+
+<div class="container py-4">
+    <p class="text-uppercase text-muted fw-semibold mb-1">Administração · Logística</p>
+    <h1 class="h3 mb-1">Capacidade</h1>
+    <p class="text-muted">@(Model.Center?.Code) @(Model.Center?.Name)</p>
+
+    @if (Model.SuccessMessage is not null)
+    {
+        <div class="alert alert-success">@Model.SuccessMessage</div>
+    }
+    @if (Model.ErrorMessage is not null)
+    {
+        <div class="alert alert-warning">@Model.ErrorMessage</div>
+    }
+    @if (!ModelState.IsValid)
+    {
+        <div class="alert alert-danger" asp-validation-summary="All"></div>
+    }
+
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Modo</th>
+                <th class="text-end">Total</th>
+                <th class="text-end">Reservado</th>
+                <th class="text-end">Consumido</th>
+                <th class="text-end">Disponível</th>
+                <th class="text-end">Utilização</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var slot in Model.Slots)
+            {
+                <tr>
+                    <td>@slot.OperationDate</td>
+                    <td>@slot.Mode</td>
+                    <td class="text-end">@slot.TotalCapacityUnits</td>
+                    <td class="text-end">@slot.ReservedCapacityUnits</td>
+                    <td class="text-end">@slot.ConsumedCapacityUnits</td>
+                    <td class="text-end">@slot.AvailableCapacityUnits</td>
+                    <td class="text-end">@slot.UtilizationPercentage%</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="card" style="max-width: 480px;">
+        <div class="card-header">Configurar Capacidade</div>
+        <div class="card-body">
+            <form method="post">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label small">Data</label>
+                        <input class="form-control" type="date" asp-for="Input.OperationDate" required />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">Modo</label>
+                        <select class="form-select" asp-for="Input.Mode">
+                            <option value="Fulfillment">Fulfillment</option>
+                            <option value="CrossDocking">CrossDocking</option>
+                            <option value="DropOff">DropOff</option>
+                            <option value="Collection">Collection</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label small">Capacidade Total (unidades)</label>
+                        <input class="form-control" type="number" min="0" asp-for="Input.TotalCapacityUnits" required />
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Salvar</button>
+                <a class="btn btn-link" asp-page="/Admin/FulfillmentCenters/Index">Voltar</a>
+            </form>
+        </div>
+    </div>
+</div>

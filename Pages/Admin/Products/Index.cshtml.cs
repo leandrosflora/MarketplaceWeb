@@ -31,11 +31,18 @@ public sealed class IndexModel : PageModel
     {
         if (SkuId is { } skuId)
         {
-            Product = await _client.GetProductAsync(skuId, cancellationToken);
-
-            if (Product is null)
+            try
             {
-                ErrorMessage = $"Nenhum produto encontrado para o SKU {skuId}.";
+                Product = await _client.GetProductAsync(skuId, cancellationToken);
+
+                if (Product is null)
+                {
+                    ErrorMessage = $"Nenhum produto encontrado para o SKU {skuId}.";
+                }
+            }
+            catch (BffApiException exception)
+            {
+                ErrorMessage = exception.Message;
             }
         }
     }
@@ -86,7 +93,15 @@ public sealed class IndexModel : PageModel
         }
 
         SkuId = skuId;
-        Product = await _client.GetProductAsync(skuId, cancellationToken);
+
+        try
+        {
+            Product = await _client.GetProductAsync(skuId, cancellationToken);
+        }
+        catch (BffApiException exception)
+        {
+            ErrorMessage ??= exception.Message;
+        }
 
         return Page();
     }

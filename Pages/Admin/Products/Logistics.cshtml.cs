@@ -33,7 +33,7 @@ public sealed class LogisticsModel : PageModel
 
         if (!loaded)
         {
-            return NotFound();
+            return ErrorMessage is null ? NotFound() : Page();
         }
 
         Input = new LogisticsInput
@@ -80,7 +80,16 @@ public sealed class LogisticsModel : PageModel
 
     private async Task<bool> LoadAsync(CancellationToken cancellationToken)
     {
-        Product = await _client.GetProductAsync(SkuId, cancellationToken);
+        try
+        {
+            Product = await _client.GetProductAsync(SkuId, cancellationToken);
+        }
+        catch (BffApiException exception)
+        {
+            ErrorMessage = exception.Message;
+            return false;
+        }
+
         return Product is not null;
     }
 

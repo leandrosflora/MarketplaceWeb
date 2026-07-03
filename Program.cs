@@ -17,6 +17,7 @@ builder.Services.AddProblemDetails();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<CorrelationIdHandler>();
+builder.Services.AddTransient<DevAdminIdentityHandler>();
 
 builder.Services
     .AddHttpClient<IMarketplaceBffClient, MarketplaceBffClient>(client =>
@@ -42,7 +43,8 @@ builder.Services
         client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
     })
-    .AddHttpMessageHandler<CorrelationIdHandler>();
+    .AddHttpMessageHandler<CorrelationIdHandler>()
+    .AddHttpMessageHandler<DevAdminIdentityHandler>();
 
 builder.Services
     .AddHttpClient<IOrderVisibilityClient, OrderVisibilityClient>(client =>
