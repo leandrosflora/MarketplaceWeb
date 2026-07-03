@@ -1,0 +1,387 @@
+/*
+    Admin theme for MarketplaceWeb /Admin area.
+    Visual language inspired by the INSPINIA admin template
+    (https://github.com/leandrosflora/Static_Full_Version), recreated on top
+    of Bootstrap 5 utilities already used across the project (no legacy
+    Bootstrap 3 / jQuery 2 / jQuery UI assets are introduced).
+
+    Scope: everything is nested under body.admin-theme so it never leaks into
+    the customer-facing storefront pages, which keep the existing Bootstrap 5
+    look defined in site.css.
+*/
+
+body.admin-theme {
+    --admin-navy: #2f4050;
+    --admin-navy-dark: #293846;
+    --admin-navy-darker: #1f2d38;
+    --admin-teal: #1ab394;
+    --admin-teal-dark: #18a689;
+    --admin-sidebar-width: 220px;
+    --admin-border: #e7eaec;
+    --admin-muted: #8095a8;
+    --admin-text: #676a6c;
+    --admin-bg: #f3f3f4;
+
+    background-color: var(--admin-bg);
+    color: var(--admin-text);
+    font-family: "Segoe UI", Roboto, "Open Sans", system-ui, -apple-system, sans-serif;
+    font-size: 0.92rem;
+}
+
+body.admin-theme a {
+    text-decoration: none;
+}
+
+body.admin-theme h1,
+body.admin-theme h2,
+body.admin-theme h3,
+body.admin-theme h4,
+body.admin-theme h5 {
+    color: #2b2e33;
+    font-weight: 600;
+}
+
+/* ---------- Shell: sidebar + page wrapper ---------- */
+
+body.admin-theme #admin-wrapper {
+    display: flex;
+    align-items: stretch;
+    min-height: 100vh;
+}
+
+body.admin-theme .admin-navbar-side {
+    width: var(--admin-sidebar-width);
+    flex: 0 0 var(--admin-sidebar-width);
+    background-color: var(--admin-navy);
+    color: #a7b1c2;
+    min-height: 100vh;
+}
+
+body.admin-theme .admin-nav-header {
+    padding: 22px 20px;
+    background: linear-gradient(135deg, var(--admin-teal) 0%, var(--admin-teal-dark) 100%);
+    color: #fff;
+}
+
+body.admin-theme .admin-nav-header .brand {
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #fff;
+}
+
+body.admin-theme .admin-nav-header .brand-sub {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+body.admin-theme .admin-nav {
+    list-style: none;
+    margin: 10px 0 0;
+    padding: 0;
+}
+
+body.admin-theme .admin-nav li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 20px;
+    color: #a7b1c2;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border-left: 4px solid transparent;
+}
+
+body.admin-theme .admin-nav li a i {
+    width: 18px;
+    text-align: center;
+    font-size: 1rem;
+}
+
+body.admin-theme .admin-nav li a:hover {
+    background-color: var(--admin-navy-dark);
+    color: #fff;
+}
+
+body.admin-theme .admin-nav li.active a {
+    background-color: var(--admin-navy-dark);
+    border-left-color: var(--admin-teal);
+    color: #fff;
+}
+
+body.admin-theme .admin-nav li.storefront-link a {
+    color: #6fe3c9;
+}
+
+body.admin-theme .admin-nav li.storefront-link a:hover {
+    color: #fff;
+}
+
+/* ---------- Content column ---------- */
+
+body.admin-theme .admin-page-wrapper {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+body.admin-theme .admin-topbar {
+    background: #fff;
+    border-bottom: 1px solid var(--admin-border);
+    padding: 10px 24px;
+}
+
+body.admin-theme .admin-topbar .btn-link {
+    color: var(--admin-text);
+}
+
+body.admin-theme .admin-page-heading {
+    background: #fff;
+    border-bottom: 1px solid var(--admin-border);
+    padding: 18px 24px;
+}
+
+body.admin-theme .admin-page-heading .eyebrow {
+    color: var(--admin-muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+body.admin-theme .admin-page-heading h1 {
+    font-size: 1.4rem;
+    margin: 0;
+}
+
+body.admin-theme .admin-content {
+    padding: 22px 24px 40px;
+    flex: 1 1 auto;
+}
+
+body.admin-theme .admin-footer {
+    background: #fff;
+    border-top: 1px solid var(--admin-border);
+    padding: 12px 24px;
+    color: var(--admin-muted);
+    font-size: 0.8rem;
+}
+
+/* ---------- ibox (card reskin) ---------- */
+/* Existing markup keeps using Bootstrap 5's .card / .card-header / .card-body;
+   this reskins it to look like INSPINIA's ibox panels site-wide. */
+
+body.admin-theme .card {
+    border: 1px solid var(--admin-border);
+    border-top: 3px solid var(--admin-border);
+    border-radius: 2px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    margin-bottom: 22px;
+}
+
+body.admin-theme .card-header {
+    background-color: #fff;
+    border-bottom: 1px solid var(--admin-border);
+    padding: 12px 16px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #4b4f56;
+}
+
+body.admin-theme .card-body {
+    padding: 18px 16px 20px;
+}
+
+body.admin-theme .card-footer {
+    background-color: #f5f5f6;
+    border-top: 1px solid var(--admin-border);
+}
+
+/* ---------- Tables ---------- */
+
+body.admin-theme .table {
+    color: var(--admin-text);
+    margin-bottom: 0;
+}
+
+body.admin-theme .table thead th {
+    background-color: #f5f5f6;
+    border-bottom: 2px solid var(--admin-border);
+    color: #4b4f56;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+body.admin-theme .table td,
+body.admin-theme .table th {
+    border-color: var(--admin-border);
+    vertical-align: middle;
+}
+
+body.admin-theme .table-hover tbody tr:hover {
+    background-color: #f5f7f8;
+}
+
+body.admin-theme .table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: #fafbfb;
+}
+
+body.admin-theme .table code {
+    font-size: 0.8rem;
+}
+
+/* ---------- Forms ---------- */
+
+body.admin-theme .form-label {
+    font-weight: 600;
+    color: #4b4f56;
+}
+
+body.admin-theme .form-control,
+body.admin-theme .form-select {
+    border-color: #d9dde1;
+    border-radius: 2px;
+}
+
+body.admin-theme .form-control:focus,
+body.admin-theme .form-select:focus {
+    border-color: var(--admin-teal);
+    box-shadow: 0 0 0 0.15rem rgba(26, 179, 148, 0.18);
+}
+
+body.admin-theme .form-check-input:checked {
+    background-color: var(--admin-teal);
+    border-color: var(--admin-teal);
+}
+
+/* ---------- Buttons ---------- */
+
+body.admin-theme .btn {
+    border-radius: 2px;
+    font-weight: 600;
+}
+
+body.admin-theme .btn-primary {
+    background-color: var(--admin-teal);
+    border-color: var(--admin-teal);
+}
+
+body.admin-theme .btn-primary:hover,
+body.admin-theme .btn-primary:focus {
+    background-color: var(--admin-teal-dark);
+    border-color: var(--admin-teal-dark);
+}
+
+body.admin-theme .btn-outline-secondary {
+    color: #4b4f56;
+    border-color: #ccd1d5;
+}
+
+body.admin-theme .btn-outline-secondary:hover {
+    background-color: #4b4f56;
+    border-color: #4b4f56;
+}
+
+body.admin-theme .btn-link {
+    color: var(--admin-teal-dark);
+}
+
+/* ---------- Alerts / badges ---------- */
+
+body.admin-theme .alert {
+    border-radius: 2px;
+    border-width: 1px;
+}
+
+body.admin-theme .badge {
+    font-weight: 600;
+    border-radius: 2px;
+}
+
+/* ---------- Dashboard tiles (product-grid style) ---------- */
+
+body.admin-theme .admin-tile {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: 1px solid var(--admin-border);
+    border-radius: 2px;
+    background: #fff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+body.admin-theme .admin-tile:hover {
+    box-shadow: 0 6px 16px rgba(47, 64, 80, 0.12);
+    transform: translateY(-2px);
+}
+
+body.admin-theme .admin-tile-icon {
+    display: grid;
+    place-items: center;
+    height: 96px;
+    background: linear-gradient(135deg, #f4fbf9, #ffffff);
+    color: var(--admin-teal);
+    font-size: 2rem;
+    border-bottom: 1px solid var(--admin-border);
+}
+
+body.admin-theme .admin-tile-body {
+    padding: 14px 16px 18px;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+body.admin-theme .admin-tile-title {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: #2b2e33;
+    margin-bottom: 4px;
+}
+
+body.admin-theme .admin-tile-desc {
+    font-size: 0.78rem;
+    color: var(--admin-muted);
+    flex: 1 1 auto;
+    margin-bottom: 12px;
+}
+
+/* ---------- Responsive: collapse sidebar on small screens ---------- */
+
+@media (max-width: 991.98px) {
+    body.admin-theme #admin-wrapper {
+        flex-direction: column;
+    }
+
+    body.admin-theme .admin-navbar-side {
+        width: 100%;
+        flex-basis: auto;
+        min-height: 0;
+    }
+
+    body.admin-theme .admin-nav {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    body.admin-theme .admin-nav li a {
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        padding: 10px 14px;
+    }
+
+    body.admin-theme .admin-nav li.active a {
+        border-left-color: transparent;
+        border-bottom-color: var(--admin-teal);
+    }
+}

@@ -1,33 +1,43 @@
 @page "/admin"
 @model Marketplace.Web.Pages.Admin.IndexModel
 @{
-    ViewData["Title"] = "Admin";
+    ViewData["Title"] = "Dashboard";
+
+    var tiles = new (string Href, string Icon, string Title, string Description)[]
+    {
+        ("/admin/products", "bi-box-seam", "Produtos Ofertados", "Cadastro de produtos, atributos logísticos e status de oferta."),
+        ("/admin/inventory", "bi-boxes", "Estoque", "Disponibilidade de SKU por seller e centro de fulfillment."),
+        ("/admin/fulfillment-centers", "bi-building", "Fulfillment Centers", "Capacidade, cutoffs e disponibilidade operacional."),
+        ("/admin/network/nodes", "bi-diagram-3", "Nós Logísticos", "Hubs e pontos da malha de roteamento."),
+        ("/admin/network/lanes", "bi-signpost-split", "Lanes / Rotas", "Rotas e janelas de entrega entre nós."),
+        ("/admin/carriers", "bi-truck", "Transportadoras", "Cadastro, service levels e lanes por transportadora."),
+        ("/admin/rate-cards", "bi-cash-coin", "Rate Cards", "Tabelas de custo de frete."),
+        ("/admin/subsidy-rules", "bi-tag", "Subsídios e Promoções", "Regras de subsídio aplicadas ao frete."),
+        ("/admin/simulators/shipping-promise", "bi-calculator", "Simular Frete", "Simulação de promessa de entrega e custo."),
+        ("/admin/orders", "bi-receipt", "Pedidos", "Consulta e acompanhamento de pedidos."),
+        ("/admin/shipments", "bi-box-arrow-up", "Shipments", "Consulta de shipments emitidos."),
+        ("/admin/tracking/events", "bi-geo-alt", "Tracking", "Inserção manual de eventos de rastreio."),
+        ("/admin/audit", "bi-shield-check", "Trilha de Auditoria", "Histórico imutável de eventos de domínio."),
+    };
 }
 
-<div class="container py-4">
-    <p class="text-uppercase text-muted fw-semibold mb-1">Administração</p>
-    <h1 class="h3 mb-4">Backoffice</h1>
+<p class="text-muted mb-4">
+    Gestão de dados mestre (produtos, estoque, fulfillment, malha logística, transportadoras e pricing)
+    via <code>MarketplaceAdmin.Bff</code>.
+</p>
 
-    <p class="text-muted">
-        Área administrativa para gestão de dados mestre (produtos, estoque, fulfillment,
-        malha logística, transportadoras e pricing) via <code>MarketplaceAdmin.Bff</code>.
-        As telas de cada domínio são adicionadas incrementalmente — veja
-        <code>openspec/changes/admin-backoffice/tasks.md</code> para o roteiro.
-    </p>
-
-    <ul class="list-unstyled">
-        <li><a asp-page="/Admin/Products/Index">Produtos Ofertados</a></li>
-        <li><a asp-page="/Admin/Inventory/Index">Estoque</a></li>
-        <li><a asp-page="/Admin/FulfillmentCenters/Index">Fulfillment Centers</a></li>
-        <li><a asp-page="/Admin/Network/Nodes">Nós Logísticos</a></li>
-        <li><a asp-page="/Admin/Network/Lanes">Lanes / Rotas</a></li>
-        <li><a asp-page="/Admin/Carriers/Index">Transportadoras</a></li>
-        <li><a asp-page="/Admin/Pricing/RateCards">Rate Cards</a></li>
-        <li><a asp-page="/Admin/Pricing/SubsidyRules">Subsídios E Promoções</a></li>
-        <li><a asp-page="/Admin/Simulators/ShippingPromise">Simular Frete</a></li>
-        <li><a asp-page="/Admin/Orders/Index">Pedidos</a></li>
-        <li><a asp-page="/Admin/Shipments/Index">Shipments</a></li>
-        <li><a asp-page="/Admin/Tracking/Events">Inserir Evento de Tracking</a></li>
-        <li><a asp-page="/Admin/Audit/Index">Trilha de Auditoria</a></li>
-    </ul>
+<div class="row g-3">
+    @foreach (var tile in tiles)
+    {
+        <div class="col-6 col-md-4 col-xl-3">
+            <a href="@tile.Href" class="admin-tile text-decoration-none">
+                <div class="admin-tile-icon"><i class="bi @tile.Icon"></i></div>
+                <div class="admin-tile-body">
+                    <div class="admin-tile-title">@tile.Title</div>
+                    <div class="admin-tile-desc">@tile.Description</div>
+                    <span class="btn btn-sm btn-outline-secondary">Acessar</span>
+                </div>
+            </a>
+        </div>
+    }
 </div>

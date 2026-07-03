@@ -1,99 +1,94 @@
-@page "/admin/carriers/{carrierCode}/service-levels"
+﻿@page "/admin/carriers/{carrierCode}/service-levels"
 @model Marketplace.Web.Pages.Admin.Carriers.ServiceLevelsModel
 @{
     ViewData["Title"] = "Admin - Service Levels";
 }
 
-<div class="container py-4">
-    <p class="text-uppercase text-muted fw-semibold mb-1">Administração · Transportadoras</p>
-    <h1 class="h3 mb-4">Service Levels · @Model.CarrierCode</h1>
+@if (Model.SuccessMessage is not null)
+{
+    <div class="alert alert-success">@Model.SuccessMessage</div>
+}
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-warning">@Model.ErrorMessage</div>
+}
+@if (!ModelState.IsValid)
+{
+    <div class="alert alert-danger" asp-validation-summary="All"></div>
+}
 
-    @if (Model.SuccessMessage is not null)
-    {
-        <div class="alert alert-success">@Model.SuccessMessage</div>
-    }
-    @if (Model.ErrorMessage is not null)
-    {
-        <div class="alert alert-warning">@Model.ErrorMessage</div>
-    }
-    @if (!ModelState.IsValid)
-    {
-        <div class="alert alert-danger" asp-validation-summary="All"></div>
-    }
-
-    <table class="table table-sm">
-        <thead>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Nome</th>
+            <th>Modo</th>
+            <th class="text-end">Peso Máx</th>
+            <th class="text-end">Prioridade</th>
+            <th>Ativo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var sl in Model.ServiceLevels)
+        {
             <tr>
-                <th>Código</th>
-                <th>Nome</th>
-                <th>Modo</th>
-                <th class="text-end">Peso Máx</th>
-                <th class="text-end">Prioridade</th>
-                <th>Ativo</th>
+                <td>@sl.Code</td>
+                <td>@sl.Name</td>
+                <td>@sl.Mode</td>
+                <td class="text-end">@sl.MaximumWeightKg</td>
+                <td class="text-end">@sl.Priority</td>
+                <td>@sl.IsActive</td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var sl in Model.ServiceLevels)
-            {
-                <tr>
-                    <td>@sl.Code</td>
-                    <td>@sl.Name</td>
-                    <td>@sl.Mode</td>
-                    <td class="text-end">@sl.MaximumWeightKg</td>
-                    <td class="text-end">@sl.Priority</td>
-                    <td>@sl.IsActive</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+        }
+    </tbody>
+</table>
 
-    <div class="card" style="max-width: 560px;">
-        <div class="card-header">Criar Service Level</div>
-        <div class="card-body">
-            <form method="post" asp-page-handler="Create">
-                <div class="row g-2">
-                    <div class="col-6">
-                        <label class="form-label small">Código</label>
-                        <input class="form-control" asp-for="CreateInput.Code" required />
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label small">Nome</label>
-                        <input class="form-control" asp-for="CreateInput.Name" required />
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label small">Modo</label>
-                        <select class="form-select" asp-for="CreateInput.Mode">
-                            <option value="FULFILLMENT">FULFILLMENT</option>
-                            <option value="FLEX">FLEX</option>
-                            <option value="CROSSDOCKING">CROSSDOCKING</option>
-                            <option value="SELLERSHIPPING">SELLERSHIPPING</option>
-                            <option value="CARRIER">CARRIER</option>
-                        </select>
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label small">Prioridade</label>
-                        <input class="form-control" type="number" min="1" asp-for="CreateInput.Priority" />
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label small">Peso máx (kg)</label>
-                        <input class="form-control" type="number" step="0.001" min="0.001" asp-for="CreateInput.MaximumWeightKg" required />
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label small">Peso cúbico máx (kg)</label>
-                        <input class="form-control" type="number" step="0.001" min="0" asp-for="CreateInput.MaximumCubicWeightKg" />
-                    </div>
-                    <div class="col-6 form-check ms-2 mt-3">
-                        <input class="form-check-input" type="checkbox" asp-for="CreateInput.SupportsFragileItems" />
-                        <label class="form-check-label" asp-for="CreateInput.SupportsFragileItems">Aceita frágeis</label>
-                    </div>
-                    <div class="col-6 form-check ms-2 mt-3">
-                        <input class="form-check-input" type="checkbox" asp-for="CreateInput.SupportsRestrictedItems" />
-                        <label class="form-check-label" asp-for="CreateInput.SupportsRestrictedItems">Aceita restritos</label>
-                    </div>
+<div class="card" style="max-width: 560px;">
+    <div class="card-header">Criar Service Level</div>
+    <div class="card-body">
+        <form method="post" asp-page-handler="Create">
+            <div class="row g-2">
+                <div class="col-6">
+                    <label class="form-label small">Código</label>
+                    <input class="form-control" asp-for="CreateInput.Code" required />
                 </div>
-                <button type="submit" class="btn btn-primary mt-3">Criar</button>
-                <a class="btn btn-link" asp-page="/Admin/Carriers/Index">Voltar</a>
-            </form>
-        </div>
+                <div class="col-6">
+                    <label class="form-label small">Nome</label>
+                    <input class="form-control" asp-for="CreateInput.Name" required />
+                </div>
+                <div class="col-6">
+                    <label class="form-label small">Modo</label>
+                    <select class="form-select" asp-for="CreateInput.Mode">
+                        <option value="FULFILLMENT">FULFILLMENT</option>
+                        <option value="FLEX">FLEX</option>
+                        <option value="CROSSDOCKING">CROSSDOCKING</option>
+                        <option value="SELLERSHIPPING">SELLERSHIPPING</option>
+                        <option value="CARRIER">CARRIER</option>
+                    </select>
+                </div>
+                <div class="col-6">
+                    <label class="form-label small">Prioridade</label>
+                    <input class="form-control" type="number" min="1" asp-for="CreateInput.Priority" />
+                </div>
+                <div class="col-6">
+                    <label class="form-label small">Peso máx (kg)</label>
+                    <input class="form-control" type="number" step="0.001" min="0.001" asp-for="CreateInput.MaximumWeightKg" required />
+                </div>
+                <div class="col-6">
+                    <label class="form-label small">Peso cúbico máx (kg)</label>
+                    <input class="form-control" type="number" step="0.001" min="0" asp-for="CreateInput.MaximumCubicWeightKg" />
+                </div>
+                <div class="col-6 form-check ms-2 mt-3">
+                    <input class="form-check-input" type="checkbox" asp-for="CreateInput.SupportsFragileItems" />
+                    <label class="form-check-label" asp-for="CreateInput.SupportsFragileItems">Aceita frágeis</label>
+                </div>
+                <div class="col-6 form-check ms-2 mt-3">
+                    <input class="form-check-input" type="checkbox" asp-for="CreateInput.SupportsRestrictedItems" />
+                    <label class="form-check-label" asp-for="CreateInput.SupportsRestrictedItems">Aceita restritos</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Criar</button>
+            <a class="btn btn-link" asp-page="/Admin/Carriers/Index">Voltar</a>
+        </form>
     </div>
 </div>

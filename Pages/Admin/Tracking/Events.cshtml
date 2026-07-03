@@ -1,117 +1,112 @@
-@page "/admin/tracking/events"
+﻿@page "/admin/tracking/events"
 @model Marketplace.Web.Pages.Admin.Tracking.EventsModel
 @{
     ViewData["Title"] = "Admin - Inserir Evento de Tracking";
 }
 
-<div class="container py-4">
-    <p class="text-uppercase text-muted fw-semibold mb-1">Administração · Operações</p>
-    <h1 class="h3 mb-4">Inserir Evento de Tracking</h1>
+@if (Model.SuccessMessage is not null)
+{
+    <div class="alert alert-success">@Model.SuccessMessage</div>
+}
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-warning">@Model.ErrorMessage</div>
+}
+@if (!ModelState.IsValid)
+{
+    <div class="alert alert-danger" asp-validation-summary="All"></div>
+}
 
-    @if (Model.SuccessMessage is not null)
-    {
-        <div class="alert alert-success">@Model.SuccessMessage</div>
-    }
-    @if (Model.ErrorMessage is not null)
-    {
-        <div class="alert alert-warning">@Model.ErrorMessage</div>
-    }
-    @if (!ModelState.IsValid)
-    {
-        <div class="alert alert-danger" asp-validation-summary="All"></div>
-    }
-
-    <div class="row">
-        <div class="col-lg-6">
-            <div class="card">
-                <div class="card-header">Novo Evento</div>
-                <div class="card-body">
-                    <form method="post">
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <label class="form-label small">Shipment ID</label>
-                                <input class="form-control" asp-for="Input.ShipmentId" required />
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label small">Order ID</label>
-                                <input class="form-control" asp-for="Input.OrderId" required />
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label small">Buyer ID</label>
-                                <input class="form-control" asp-for="Input.BuyerId" required />
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label small">Tracking Code</label>
-                                <input class="form-control" asp-for="Input.TrackingCode" required />
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label small">Carrier Code</label>
-                                <input class="form-control" asp-for="Input.CarrierCode" required />
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label small">Status</label>
-                                <select class="form-select" asp-for="Input.Status">
-                                    @foreach (var status in Model.StatusOptions)
-                                    {
-                                        <option value="@status">@status</option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label small">Descrição</label>
-                                <input class="form-control" asp-for="Input.Description" />
-                            </div>
-                            <div class="col-4">
-                                <label class="form-label small">Cidade</label>
-                                <input class="form-control" asp-for="Input.City" />
-                            </div>
-                            <div class="col-4">
-                                <label class="form-label small">Estado</label>
-                                <input class="form-control" asp-for="Input.State" />
-                            </div>
-                            <div class="col-4">
-                                <label class="form-label small">País</label>
-                                <input class="form-control" asp-for="Input.Country" />
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label small">Ocorrido em (UTC)</label>
-                                <input class="form-control" type="datetime-local" asp-for="Input.OccurredAt" />
-                            </div>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">Novo Evento</div>
+            <div class="card-body">
+                <form method="post">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="form-label small">Shipment ID</label>
+                            <input class="form-control" asp-for="Input.ShipmentId" required />
                         </div>
-                        <button type="submit" class="btn btn-primary mt-3">Registrar Evento</button>
-                    </form>
-                </div>
+                        <div class="col-6">
+                            <label class="form-label small">Order ID</label>
+                            <input class="form-control" asp-for="Input.OrderId" required />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Buyer ID</label>
+                            <input class="form-control" asp-for="Input.BuyerId" required />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Tracking Code</label>
+                            <input class="form-control" asp-for="Input.TrackingCode" required />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Carrier Code</label>
+                            <input class="form-control" asp-for="Input.CarrierCode" required />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Status</label>
+                            <select class="form-select" asp-for="Input.Status">
+                                @foreach (var status in Model.StatusOptions)
+                                {
+                                    <option value="@status">@status</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small">Descrição</label>
+                            <input class="form-control" asp-for="Input.Description" />
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small">Cidade</label>
+                            <input class="form-control" asp-for="Input.City" />
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small">Estado</label>
+                            <input class="form-control" asp-for="Input.State" />
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small">País</label>
+                            <input class="form-control" asp-for="Input.Country" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Ocorrido em (UTC)</label>
+                            <input class="form-control" type="datetime-local" asp-for="Input.OccurredAt" />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Registrar Evento</button>
+                </form>
             </div>
         </div>
+    </div>
 
-        <div class="col-lg-6">
-            @if (Model.CurrentTracking is { } tracking)
-            {
-                <div class="card">
-                    <div class="card-header">Tracking Atual — @tracking.ShipmentId</div>
-                    <div class="card-body">
-                        <dl class="row small mb-3">
-                            <dt class="col-5">Status Atual</dt><dd class="col-7">@tracking.CurrentStatus</dd>
-                            <dt class="col-5">Tracking Code</dt><dd class="col-7">@tracking.TrackingCode</dd>
-                            <dt class="col-5">Carrier</dt><dd class="col-7">@tracking.CarrierCode</dd>
-                            <dt class="col-5">Último evento</dt><dd class="col-7">@tracking.LastEventOccurredAt</dd>
-                        </dl>
-                        <table class="table table-sm mb-0">
-                            <thead><tr><th>Status</th><th>Descrição</th><th>Ocorrido em</th></tr></thead>
-                            <tbody>
-                                @foreach (var evt in tracking.Events.OrderByDescending(e => e.OccurredAt))
-                                {
-                                    <tr>
-                                        <td>@evt.Status</td>
-                                        <td>@evt.Description</td>
-                                        <td>@evt.OccurredAt</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+    <div class="col-lg-6">
+        @if (Model.CurrentTracking is { } tracking)
+        {
+            <div class="card">
+                <div class="card-header">Tracking Atual — @tracking.ShipmentId</div>
+                <div class="card-body">
+                    <dl class="row small mb-3">
+                        <dt class="col-5">Status Atual</dt><dd class="col-7">@tracking.CurrentStatus</dd>
+                        <dt class="col-5">Tracking Code</dt><dd class="col-7">@tracking.TrackingCode</dd>
+                        <dt class="col-5">Carrier</dt><dd class="col-7">@tracking.CarrierCode</dd>
+                        <dt class="col-5">Último evento</dt><dd class="col-7">@tracking.LastEventOccurredAt</dd>
+                    </dl>
+                    <table class="table table-sm mb-0">
+                        <thead><tr><th>Status</th><th>Descrição</th><th>Ocorrido em</th></tr></thead>
+                        <tbody>
+                            @foreach (var evt in tracking.Events.OrderByDescending(e => e.OccurredAt))
+                            {
+                                <tr>
+                                    <td>@evt.Status</td>
+                                    <td>@evt.Description</td>
+                                    <td>@evt.OccurredAt</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
-            }
-        </div>
+            </div>
+        }
     </div>
 </div>

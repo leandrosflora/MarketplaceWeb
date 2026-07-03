@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MarketPlace Admin</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/admin-theme.css" asp-append-version="true" />
+</head>
+<body class="admin-theme">
+    <div id="admin-wrapper">
+        <nav class="admin-navbar-side">
+            <div class="admin-nav-header">
+                <div class="brand">MarketPlace</div>
+                <div class="brand-sub">Backoffice</div>
+            </div>
+            <ul class="admin-nav">
+                @{
+                    var navItems = new (string Href, string Label, string Icon)[]
+                    {
+                        ("/admin", "Dashboard", "bi-speedometer2"),
+                        ("/admin/products", "Produtos Ofertados", "bi-box-seam"),
+                        ("/admin/inventory", "Estoque", "bi-boxes"),
+                        ("/admin/fulfillment-centers", "Fulfillment Centers", "bi-building"),
+                        ("/admin/network/nodes", "Nós Logísticos", "bi-diagram-3"),
+                        ("/admin/network/lanes", "Lanes / Rotas", "bi-signpost-split"),
+                        ("/admin/carriers", "Transportadoras", "bi-truck"),
+                        ("/admin/rate-cards", "Rate Cards", "bi-cash-coin"),
+                        ("/admin/subsidy-rules", "Subsídios e Promoções", "bi-tag"),
+                        ("/admin/simulators/shipping-promise", "Simular Frete", "bi-calculator"),
+                        ("/admin/orders", "Pedidos", "bi-receipt"),
+                        ("/admin/shipments", "Shipments", "bi-box-arrow-up"),
+                        ("/admin/tracking/events", "Tracking", "bi-geo-alt"),
+                        ("/admin/audit", "Trilha de Auditoria", "bi-shield-check"),
+                    };
+                }
+                @foreach (var item in navItems)
+                {
+                    <li class="@(IsActive(item.Href) ? "active" : "")">
+                        <a href="@item.Href"><i class="bi @item.Icon"></i> <span>@item.Label</span></a>
+                    </li>
+                }
+                <li class="storefront-link">
+                    <a href="/"><i class="bi bi-arrow-left-circle"></i> <span>Voltar à loja</span></a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="admin-page-wrapper">
+            <div class="admin-page-heading">
+                <div class="eyebrow">Painel administrativo</div>
+                <h1>@ViewData["Title"]</h1>
+            </div>
+
+            <div class="admin-content">
+                @RenderBody()
+            </div>
+
+            <div class="admin-footer">
+                &copy; 2026 MarketPlace &middot; Backoffice interno
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+@functions {
+    bool IsActive(string href)
+    {
+        var path = Context.Request.Path.Value ?? string.Empty;
+        if (href == "/admin")
+        {
+            return path.Equals("/admin", StringComparison.OrdinalIgnoreCase);
+        }
+
+        return path.StartsWith(href, StringComparison.OrdinalIgnoreCase);
+    }
+}

@@ -1,93 +1,88 @@
-@page "/admin/shipments"
+﻿@page "/admin/shipments"
 @model Marketplace.Web.Pages.Admin.Shipments.IndexModel
 @{
     ViewData["Title"] = "Admin - Shipments";
     var nonCancellableStatuses = new HashSet<string> { "HandedOver", "InTransit", "Delivered", "CancellationRequested", "Cancelled", "Failed" };
 }
 
-<div class="container py-4">
-    <p class="text-uppercase text-muted fw-semibold mb-1">Administração · Operações</p>
-    <h1 class="h3 mb-4">Shipments</h1>
+@if (Model.SuccessMessage is not null)
+{
+    <div class="alert alert-success">@Model.SuccessMessage</div>
+}
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-warning">@Model.ErrorMessage</div>
+}
 
-    @if (Model.SuccessMessage is not null)
-    {
-        <div class="alert alert-success">@Model.SuccessMessage</div>
-    }
-    @if (Model.ErrorMessage is not null)
-    {
-        <div class="alert alert-warning">@Model.ErrorMessage</div>
-    }
+<div class="card mb-4">
+    <div class="card-header">Buscar</div>
+    <div class="card-body">
+        <form method="get" class="row g-2">
+            <div class="col-6">
+                <label class="form-label small">Order ID</label>
+                <input class="form-control" name="orderId" value="@Model.OrderId" />
+            </div>
+            <div class="col-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Buscar</button>
+            </div>
+        </form>
+    </div>
+</div>
 
-    <div class="card mb-4">
-        <div class="card-header">Buscar</div>
+<table class="table table-sm table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Order</th>
+            <th>Status</th>
+            <th>Carrier</th>
+            <th>Service Level</th>
+            <th>Tracking Code</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var shipment in Model.Shipments)
+        {
+            <tr>
+                <td><code>@shipment.Id</code></td>
+                <td><code>@shipment.OrderId</code></td>
+                <td>@shipment.Status</td>
+                <td>@shipment.CarrierCode</td>
+                <td>@shipment.ServiceLevelCode</td>
+                <td>@shipment.TrackingCode</td>
+                <td class="d-flex gap-2">
+                    <a asp-page="/Admin/Shipments/Index" asp-page-handler="Label" asp-route-shipmentId="@shipment.Id" asp-route-orderId="@Model.OrderId">Label</a>
+                    <a asp-page="/Admin/Tracking/Events" asp-route-shipmentId="@shipment.Id" asp-route-orderId="@shipment.OrderId">Tracking</a>
+                    @if (!nonCancellableStatuses.Contains(shipment.Status))
+                    {
+                        <form method="post" asp-page-handler="Cancel" asp-route-shipmentId="@shipment.Id" asp-route-orderId="@Model.OrderId" class="d-inline">
+                            <button type="submit" class="btn btn-link btn-sm p-0 text-danger">Cancelar</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.SelectedShipment is { } shipmentDetail)
+{
+    <div class="card mt-4">
+        <div class="card-header">Shipment @shipmentDetail.Id</div>
         <div class="card-body">
-            <form method="get" class="row g-2">
-                <div class="col-6">
-                    <label class="form-label small">Order ID</label>
-                    <input class="form-control" name="orderId" value="@Model.OrderId" />
-                </div>
-                <div class="col-3 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">Buscar</button>
-                </div>
-            </form>
+            <dl class="row small mb-0">
+                <dt class="col-3">Status</dt><dd class="col-9">@shipmentDetail.Status</dd>
+                <dt class="col-3">Carrier</dt><dd class="col-9">@shipmentDetail.CarrierCode</dd>
+                <dt class="col-3">Service Level</dt><dd class="col-9">@shipmentDetail.ServiceLevelCode</dd>
+                <dt class="col-3">Tracking Code</dt><dd class="col-9">@shipmentDetail.TrackingCode</dd>
+                <dt class="col-3">Entrega prometida</dt><dd class="col-9">@shipmentDetail.PromisedDeliveryDate</dd>
+                @if (Model.LabelUrl is not null)
+                {
+                    <dt class="col-3">Etiqueta</dt>
+                    <dd class="col-9"><a href="@Model.LabelUrl" target="_blank" rel="noopener">@Model.LabelUrl</a></dd>
+                }
+            </dl>
         </div>
     </div>
-
-    <table class="table table-sm table-striped">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Order</th>
-                <th>Status</th>
-                <th>Carrier</th>
-                <th>Service Level</th>
-                <th>Tracking Code</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var shipment in Model.Shipments)
-            {
-                <tr>
-                    <td><code>@shipment.Id</code></td>
-                    <td><code>@shipment.OrderId</code></td>
-                    <td>@shipment.Status</td>
-                    <td>@shipment.CarrierCode</td>
-                    <td>@shipment.ServiceLevelCode</td>
-                    <td>@shipment.TrackingCode</td>
-                    <td class="d-flex gap-2">
-                        <a asp-page="/Admin/Shipments/Index" asp-page-handler="Label" asp-route-shipmentId="@shipment.Id" asp-route-orderId="@Model.OrderId">Label</a>
-                        <a asp-page="/Admin/Tracking/Events" asp-route-shipmentId="@shipment.Id" asp-route-orderId="@shipment.OrderId">Tracking</a>
-                        @if (!nonCancellableStatuses.Contains(shipment.Status))
-                        {
-                            <form method="post" asp-page-handler="Cancel" asp-route-shipmentId="@shipment.Id" asp-route-orderId="@Model.OrderId" class="d-inline">
-                                <button type="submit" class="btn btn-link btn-sm p-0 text-danger">Cancelar</button>
-                            </form>
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    @if (Model.SelectedShipment is { } shipmentDetail)
-    {
-        <div class="card mt-4">
-            <div class="card-header">Shipment @shipmentDetail.Id</div>
-            <div class="card-body">
-                <dl class="row small mb-0">
-                    <dt class="col-3">Status</dt><dd class="col-9">@shipmentDetail.Status</dd>
-                    <dt class="col-3">Carrier</dt><dd class="col-9">@shipmentDetail.CarrierCode</dd>
-                    <dt class="col-3">Service Level</dt><dd class="col-9">@shipmentDetail.ServiceLevelCode</dd>
-                    <dt class="col-3">Tracking Code</dt><dd class="col-9">@shipmentDetail.TrackingCode</dd>
-                    <dt class="col-3">Entrega prometida</dt><dd class="col-9">@shipmentDetail.PromisedDeliveryDate</dd>
-                    @if (Model.LabelUrl is not null)
-                    {
-                        <dt class="col-3">Etiqueta</dt>
-                        <dd class="col-9"><a href="@Model.LabelUrl" target="_blank" rel="noopener">@Model.LabelUrl</a></dd>
-                    }
-                </dl>
-            </div>
-        </div>
-    }
-</div>
+}

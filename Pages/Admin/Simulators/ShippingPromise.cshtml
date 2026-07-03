@@ -1,94 +1,89 @@
-@page "/admin/simulators/shipping-promise"
+﻿@page "/admin/simulators/shipping-promise"
 @model Marketplace.Web.Pages.Admin.Simulators.ShippingPromiseModel
 @{
     ViewData["Title"] = "Admin - Simular Frete";
 }
 
-<div class="container py-4">
-    <p class="text-uppercase text-muted fw-semibold mb-1">Administração · Simulador</p>
-    <h1 class="h3 mb-4">Simular Frete</h1>
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-warning">@Model.ErrorMessage</div>
+}
+@if (!ModelState.IsValid)
+{
+    <div class="alert alert-danger" asp-validation-summary="All"></div>
+}
 
-    @if (Model.ErrorMessage is not null)
-    {
-        <div class="alert alert-warning">@Model.ErrorMessage</div>
-    }
-    @if (!ModelState.IsValid)
-    {
-        <div class="alert alert-danger" asp-validation-summary="All"></div>
-    }
-
-    <div class="row">
-        <div class="col-lg-6">
-            <div class="card">
-                <div class="card-header">Parâmetros</div>
-                <div class="card-body">
-                    <form method="post">
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <label class="form-label small">SKU ID</label>
-                                <input class="form-control" asp-for="Input.SkuId" required />
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label small">Seller ID</label>
-                                <input class="form-control" asp-for="Input.SellerId" required />
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label small">Buyer ID (opcional)</label>
-                                <input class="form-control" asp-for="Input.BuyerId" />
-                            </div>
-                            <div class="col-3">
-                                <label class="form-label small">Quantidade</label>
-                                <input class="form-control" type="number" min="1" asp-for="Input.Quantity" />
-                            </div>
-                            <div class="col-3">
-                                <label class="form-label small">Preço unitário</label>
-                                <input class="form-control" type="number" step="0.01" asp-for="Input.UnitPrice" />
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label small">CEP destino</label>
-                                <input class="form-control" asp-for="Input.DestinationZipCode" required />
-                            </div>
-                            <div class="col-3">
-                                <label class="form-label small">Cidade</label>
-                                <input class="form-control" asp-for="Input.City" />
-                            </div>
-                            <div class="col-3">
-                                <label class="form-label small">Estado</label>
-                                <input class="form-control" asp-for="Input.State" />
-                            </div>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">Parâmetros</div>
+            <div class="card-body">
+                <form method="post">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="form-label small">SKU ID</label>
+                            <input class="form-control" asp-for="Input.SkuId" required />
                         </div>
-                        <button type="submit" class="btn btn-primary mt-3">Simular</button>
-                    </form>
-                </div>
+                        <div class="col-6">
+                            <label class="form-label small">Seller ID</label>
+                            <input class="form-control" asp-for="Input.SellerId" required />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Buyer ID (opcional)</label>
+                            <input class="form-control" asp-for="Input.BuyerId" />
+                        </div>
+                        <div class="col-3">
+                            <label class="form-label small">Quantidade</label>
+                            <input class="form-control" type="number" min="1" asp-for="Input.Quantity" />
+                        </div>
+                        <div class="col-3">
+                            <label class="form-label small">Preço unitário</label>
+                            <input class="form-control" type="number" step="0.01" asp-for="Input.UnitPrice" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">CEP destino</label>
+                            <input class="form-control" asp-for="Input.DestinationZipCode" required />
+                        </div>
+                        <div class="col-3">
+                            <label class="form-label small">Cidade</label>
+                            <input class="form-control" asp-for="Input.City" />
+                        </div>
+                        <div class="col-3">
+                            <label class="form-label small">Estado</label>
+                            <input class="form-control" asp-for="Input.State" />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Simular</button>
+                </form>
             </div>
         </div>
+    </div>
 
-        <div class="col-lg-6">
-            @if (Model.Result is not null)
-            {
-                <div class="card">
-                    <div class="card-header">Resultado</div>
-                    <div class="card-body">
-                        @if (Model.Result.Available)
-                        {
-                            <dl class="row small mb-0">
-                                <dt class="col-5">Disponível</dt><dd class="col-7">Sim</dd>
-                                <dt class="col-5">Promise ID</dt><dd class="col-7">@Model.Result.PromiseId</dd>
-                                <dt class="col-5">Modo</dt><dd class="col-7">@Model.Result.Mode</dd>
-                                <dt class="col-5">Carrier</dt><dd class="col-7">@Model.Result.Carrier</dd>
-                                <dt class="col-5">Entrega estimada</dt><dd class="col-7">@Model.Result.EstimatedDeliveryDate</dd>
-                                <dt class="col-5">Custo</dt><dd class="col-7">@Model.Result.Cost</dd>
-                                <dt class="col-5">Fonte</dt><dd class="col-7">@Model.Result.Source</dd>
-                            </dl>
-                        }
-                        else
-                        {
-                            <p class="mb-0"><strong>Indisponível</strong></p>
-                            <p class="text-muted">@Model.Result.UnavailableReason</p>
-                        }
-                    </div>
+    <div class="col-lg-6">
+        @if (Model.Result is not null)
+        {
+            <div class="card">
+                <div class="card-header">Resultado</div>
+                <div class="card-body">
+                    @if (Model.Result.Available)
+                    {
+                        <dl class="row small mb-0">
+                            <dt class="col-5">Disponível</dt><dd class="col-7">Sim</dd>
+                            <dt class="col-5">Promise ID</dt><dd class="col-7">@Model.Result.PromiseId</dd>
+                            <dt class="col-5">Modo</dt><dd class="col-7">@Model.Result.Mode</dd>
+                            <dt class="col-5">Carrier</dt><dd class="col-7">@Model.Result.Carrier</dd>
+                            <dt class="col-5">Entrega estimada</dt><dd class="col-7">@Model.Result.EstimatedDeliveryDate</dd>
+                            <dt class="col-5">Custo</dt><dd class="col-7">@Model.Result.Cost</dd>
+                            <dt class="col-5">Fonte</dt><dd class="col-7">@Model.Result.Source</dd>
+                        </dl>
+                    }
+                    else
+                    {
+                        <p class="mb-0"><strong>Indisponível</strong></p>
+                        <p class="text-muted">@Model.Result.UnavailableReason</p>
+                    }
                 </div>
-            }
-        </div>
+            </div>
+        }
     </div>
 </div>

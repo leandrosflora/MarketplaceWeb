@@ -1,131 +1,126 @@
 @page "/admin/products"
 @model Marketplace.Web.Pages.Admin.Products.IndexModel
 @{
-    ViewData["Title"] = "Admin - Produtos Ofertados";
+    ViewData["Title"] = "Produtos Ofertados";
 }
 
-<div class="container py-4">
-    <p class="text-uppercase text-muted fw-semibold mb-1">Administração · Catálogo</p>
-    <h1 class="h3 mb-4">Produtos Ofertados</h1>
+@if (Model.SuccessMessage is not null)
+{
+    <div class="alert alert-success">@Model.SuccessMessage</div>
+}
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-warning">@Model.ErrorMessage</div>
+}
+@if (!ModelState.IsValid)
+{
+    <div class="alert alert-danger" asp-validation-summary="All"></div>
+}
 
-    @if (Model.SuccessMessage is not null)
-    {
-        <div class="alert alert-success">@Model.SuccessMessage</div>
-    }
-    @if (Model.ErrorMessage is not null)
-    {
-        <div class="alert alert-warning">@Model.ErrorMessage</div>
-    }
-    @if (!ModelState.IsValid)
-    {
-        <div class="alert alert-danger" asp-validation-summary="All"></div>
-    }
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-search me-1"></i> Buscar produto por SKU</div>
+            <div class="card-body">
+                <form method="get" class="row g-2 align-items-end">
+                    <div class="col-8">
+                        <label class="form-label small">SKU ID</label>
+                        <input class="form-control" name="SkuId" value="@Model.SkuId" />
+                    </div>
+                    <div class="col-4">
+                        <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                    </div>
+                </form>
 
-    <div class="row g-4">
-        <div class="col-lg-5">
-            <div class="card">
-                <div class="card-header">Buscar produto por SKU</div>
-                <div class="card-body">
-                    <form method="get" class="row g-2 align-items-end">
-                        <div class="col-8">
-                            <label class="form-label small">SKU ID</label>
-                            <input class="form-control" name="SkuId" value="@Model.SkuId" />
+                @if (Model.Product is { } product)
+                {
+                    <hr />
+                    <dl class="row small mb-0">
+                        <dt class="col-5">SKU</dt><dd class="col-7">@product.SkuId</dd>
+                        <dt class="col-5">Seller</dt><dd class="col-7">@product.SellerId</dd>
+                        <dt class="col-5">Título</dt><dd class="col-7">@product.Title</dd>
+                        <dt class="col-5">Categoria</dt><dd class="col-7">@product.Category</dd>
+                        <dt class="col-5">Preço</dt><dd class="col-7">@product.Price.ToString("C")</dd>
+                        <dt class="col-5">Status</dt><dd class="col-7"><span class="badge text-bg-secondary">@product.Status</span></dd>
+                    </dl>
+
+                    <form method="post" asp-page-handler="ChangeStatus" class="row g-2 align-items-end mt-2">
+                        <input type="hidden" name="skuId" value="@product.SkuId" />
+                        <div class="col-7">
+                            <label class="form-label small">Novo status</label>
+                            <select class="form-select" name="status">
+                                <option value="Active">Active</option>
+                                <option value="Paused">Paused</option>
+                                <option value="Blocked">Blocked</option>
+                            </select>
                         </div>
-                        <div class="col-4">
-                            <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                        <div class="col-5">
+                            <button type="submit" class="btn btn-outline-secondary w-100">Alterar status</button>
                         </div>
                     </form>
 
-                    @if (Model.Product is { } product)
-                    {
-                        <hr />
-                        <dl class="row small mb-0">
-                            <dt class="col-5">SKU</dt><dd class="col-7">@product.SkuId</dd>
-                            <dt class="col-5">Seller</dt><dd class="col-7">@product.SellerId</dd>
-                            <dt class="col-5">Título</dt><dd class="col-7">@product.Title</dd>
-                            <dt class="col-5">Categoria</dt><dd class="col-7">@product.Category</dd>
-                            <dt class="col-5">Preço</dt><dd class="col-7">@product.Price.ToString("C")</dd>
-                            <dt class="col-5">Status</dt><dd class="col-7">@product.Status</dd>
-                        </dl>
-
-                        <form method="post" asp-page-handler="ChangeStatus" class="row g-2 align-items-end mt-2">
-                            <input type="hidden" name="skuId" value="@product.SkuId" />
-                            <div class="col-7">
-                                <label class="form-label small">Novo status</label>
-                                <select class="form-select" name="status">
-                                    <option value="Active">Active</option>
-                                    <option value="Paused">Paused</option>
-                                    <option value="Blocked">Blocked</option>
-                                </select>
-                            </div>
-                            <div class="col-5">
-                                <button type="submit" class="btn btn-outline-secondary w-100">Alterar status</button>
-                            </div>
-                        </form>
-
-                        <a class="btn btn-link px-0 mt-2" asp-page="/Admin/Products/Logistics" asp-route-skuId="@product.SkuId">
-                            Editar atributos logísticos →
-                        </a>
-                    }
-                </div>
+                    <a class="btn btn-link px-0 mt-2" asp-page="/Admin/Products/Logistics" asp-route-skuId="@product.SkuId">
+                        Editar atributos logísticos <i class="bi bi-arrow-right"></i>
+                    </a>
+                }
             </div>
         </div>
+    </div>
 
-        <div class="col-lg-7">
-            <div class="card">
-                <div class="card-header">Criar produto</div>
-                <div class="card-body">
-                    <form method="post" asp-page-handler="Create">
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <label class="form-label small">SKU ID</label>
-                                <input class="form-control" asp-for="CreateInput.SkuId" />
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label small">Seller ID</label>
-                                <input class="form-control" asp-for="CreateInput.SellerId" />
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label small">Título</label>
-                                <input class="form-control" asp-for="CreateInput.Title" />
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label small">Categoria</label>
-                                <input class="form-control" asp-for="CreateInput.Category" />
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label small">Preço</label>
-                                <input class="form-control" type="number" step="0.01" asp-for="CreateInput.Price" />
-                            </div>
-                            <div class="col-3">
-                                <label class="form-label small">Peso (kg)</label>
-                                <input class="form-control" type="number" step="0.001" asp-for="CreateInput.WeightKg" />
-                            </div>
-                            <div class="col-3">
-                                <label class="form-label small">Altura (cm)</label>
-                                <input class="form-control" type="number" step="0.1" asp-for="CreateInput.HeightCm" />
-                            </div>
-                            <div class="col-3">
-                                <label class="form-label small">Largura (cm)</label>
-                                <input class="form-control" type="number" step="0.1" asp-for="CreateInput.WidthCm" />
-                            </div>
-                            <div class="col-3">
-                                <label class="form-label small">Comprimento (cm)</label>
-                                <input class="form-control" type="number" step="0.1" asp-for="CreateInput.LengthCm" />
-                            </div>
-                            <div class="col-6 form-check ms-2 mt-3">
-                                <input class="form-check-input" type="checkbox" asp-for="CreateInput.IsFragile" />
-                                <label class="form-check-label" asp-for="CreateInput.IsFragile">Frágil</label>
-                            </div>
-                            <div class="col-6 form-check ms-2 mt-3">
-                                <input class="form-check-input" type="checkbox" asp-for="CreateInput.IsRestricted" />
-                                <label class="form-check-label" asp-for="CreateInput.IsRestricted">Restrito</label>
-                            </div>
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-plus-lg me-1"></i> Criar produto</div>
+            <div class="card-body">
+                <form method="post" asp-page-handler="Create">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="form-label small">SKU ID</label>
+                            <input class="form-control" asp-for="CreateInput.SkuId" />
                         </div>
+                        <div class="col-6">
+                            <label class="form-label small">Seller ID</label>
+                            <input class="form-control" asp-for="CreateInput.SellerId" />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small">Título</label>
+                            <input class="form-control" asp-for="CreateInput.Title" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Categoria</label>
+                            <input class="form-control" asp-for="CreateInput.Category" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Preço</label>
+                            <input class="form-control" type="number" step="0.01" asp-for="CreateInput.Price" />
+                        </div>
+                        <div class="col-3">
+                            <label class="form-label small">Peso (kg)</label>
+                            <input class="form-control" type="number" step="0.001" asp-for="CreateInput.WeightKg" />
+                        </div>
+                        <div class="col-3">
+                            <label class="form-label small">Altura (cm)</label>
+                            <input class="form-control" type="number" step="0.1" asp-for="CreateInput.HeightCm" />
+                        </div>
+                        <div class="col-3">
+                            <label class="form-label small">Largura (cm)</label>
+                            <input class="form-control" type="number" step="0.1" asp-for="CreateInput.WidthCm" />
+                        </div>
+                        <div class="col-3">
+                            <label class="form-label small">Comprimento (cm)</label>
+                            <input class="form-control" type="number" step="0.1" asp-for="CreateInput.LengthCm" />
+                        </div>
+                        <div class="col-6 form-check ms-2 mt-3">
+                            <input class="form-check-input" type="checkbox" asp-for="CreateInput.IsFragile" />
+                            <label class="form-check-label" asp-for="CreateInput.IsFragile">Frágil</label>
+                        </div>
+                        <div class="col-6 form-check ms-2 mt-3">
+                            <input class="form-check-input" type="checkbox" asp-for="CreateInput.IsRestricted" />
+                            <label class="form-check-label" asp-for="CreateInput.IsRestricted">Restrito</label>
+                        </div>
+                    </div>
 
-                        <button type="submit" class="btn btn-primary mt-3">Criar produto</button>
-                    </form>
-                </div>
+                    <button type="submit" class="btn btn-primary mt-3">Criar produto</button>
+                </form>
             </div>
         </div>
     </div>

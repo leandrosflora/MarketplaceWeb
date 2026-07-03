@@ -1,102 +1,97 @@
-@page "/admin/network/nodes"
+﻿@page "/admin/network/nodes"
 @model Marketplace.Web.Pages.Admin.Network.NodesModel
 @{
     ViewData["Title"] = "Admin - Nós Logísticos";
 }
 
-<div class="container py-4">
-    <p class="text-uppercase text-muted fw-semibold mb-1">Administração · Malha Logística</p>
-    <h1 class="h3 mb-4">Nós Logísticos</h1>
+@if (Model.SuccessMessage is not null)
+{
+    <div class="alert alert-success">@Model.SuccessMessage</div>
+}
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-warning">@Model.ErrorMessage</div>
+}
+@if (!ModelState.IsValid)
+{
+    <div class="alert alert-danger" asp-validation-summary="All"></div>
+}
 
-    @if (Model.SuccessMessage is not null)
-    {
-        <div class="alert alert-success">@Model.SuccessMessage</div>
-    }
-    @if (Model.ErrorMessage is not null)
-    {
-        <div class="alert alert-warning">@Model.ErrorMessage</div>
-    }
-    @if (!ModelState.IsValid)
-    {
-        <div class="alert alert-danger" asp-validation-summary="All"></div>
-    }
+<form method="get" class="row g-2 align-items-end mb-3">
+    <div class="col-auto">
+        <label class="form-label small mb-1">Região</label>
+        <input class="form-control form-control-sm" name="Region" value="@Model.Region" />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+    </div>
+</form>
 
-    <form method="get" class="row g-2 align-items-end mb-3">
-        <div class="col-auto">
-            <label class="form-label small mb-1">Região</label>
-            <input class="form-control form-control-sm" name="Region" value="@Model.Region" />
-        </div>
-        <div class="col-auto">
-            <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
-        </div>
-    </form>
-
-    <table class="table table-sm">
-        <thead>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Nome</th>
+            <th>Região</th>
+            <th>Tipo</th>
+            <th>Timezone</th>
+            <th>Handling (min)</th>
+            <th>Ativo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var node in Model.Nodes)
+        {
             <tr>
-                <th>Código</th>
-                <th>Nome</th>
-                <th>Região</th>
-                <th>Tipo</th>
-                <th>Timezone</th>
-                <th>Handling (min)</th>
-                <th>Ativo</th>
+                <td>@node.Code</td>
+                <td>@node.Name</td>
+                <td>@node.Region</td>
+                <td>@node.Type</td>
+                <td>@node.TimeZoneId</td>
+                <td>@node.HandlingMinutes</td>
+                <td>@node.IsActive</td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var node in Model.Nodes)
-            {
-                <tr>
-                    <td>@node.Code</td>
-                    <td>@node.Name</td>
-                    <td>@node.Region</td>
-                    <td>@node.Type</td>
-                    <td>@node.TimeZoneId</td>
-                    <td>@node.HandlingMinutes</td>
-                    <td>@node.IsActive</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+        }
+    </tbody>
+</table>
 
-    <div class="card" style="max-width: 560px;">
-        <div class="card-header">Criar Nó Logístico</div>
-        <div class="card-body">
-            <form method="post" asp-page-handler="Create">
-                <div class="row g-2">
-                    <div class="col-6">
-                        <label class="form-label small">Código</label>
-                        <input class="form-control" asp-for="CreateInput.Code" required />
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label small">Nome</label>
-                        <input class="form-control" asp-for="CreateInput.Name" required />
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label small">Região</label>
-                        <input class="form-control" asp-for="CreateInput.Region" />
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label small">Timezone</label>
-                        <input class="form-control" asp-for="CreateInput.TimeZoneId" />
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label small">Tipo</label>
-                        <select class="form-select" asp-for="CreateInput.Type">
-                            <option value="FulfillmentCenter">FulfillmentCenter</option>
-                            <option value="CrossDocking">CrossDocking</option>
-                            <option value="RegionalHub">RegionalHub</option>
-                            <option value="SortationCenter">SortationCenter</option>
-                            <option value="LastMileStation">LastMileStation</option>
-                        </select>
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label small">Handling (min)</label>
-                        <input class="form-control" type="number" min="0" asp-for="CreateInput.HandlingMinutes" />
-                    </div>
+<div class="card" style="max-width: 560px;">
+    <div class="card-header">Criar Nó Logístico</div>
+    <div class="card-body">
+        <form method="post" asp-page-handler="Create">
+            <div class="row g-2">
+                <div class="col-6">
+                    <label class="form-label small">Código</label>
+                    <input class="form-control" asp-for="CreateInput.Code" required />
                 </div>
-                <button type="submit" class="btn btn-primary mt-3">Criar</button>
-            </form>
-        </div>
+                <div class="col-6">
+                    <label class="form-label small">Nome</label>
+                    <input class="form-control" asp-for="CreateInput.Name" required />
+                </div>
+                <div class="col-6">
+                    <label class="form-label small">Região</label>
+                    <input class="form-control" asp-for="CreateInput.Region" />
+                </div>
+                <div class="col-6">
+                    <label class="form-label small">Timezone</label>
+                    <input class="form-control" asp-for="CreateInput.TimeZoneId" />
+                </div>
+                <div class="col-6">
+                    <label class="form-label small">Tipo</label>
+                    <select class="form-select" asp-for="CreateInput.Type">
+                        <option value="FulfillmentCenter">FulfillmentCenter</option>
+                        <option value="CrossDocking">CrossDocking</option>
+                        <option value="RegionalHub">RegionalHub</option>
+                        <option value="SortationCenter">SortationCenter</option>
+                        <option value="LastMileStation">LastMileStation</option>
+                    </select>
+                </div>
+                <div class="col-6">
+                    <label class="form-label small">Handling (min)</label>
+                    <input class="form-control" type="number" min="0" asp-for="CreateInput.HandlingMinutes" />
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Criar</button>
+        </form>
     </div>
 </div>

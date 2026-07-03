@@ -1,64 +1,59 @@
-@page "/admin/audit"
+﻿@page "/admin/audit"
 @model Marketplace.Web.Pages.Admin.Audit.IndexModel
 @{
     ViewData["Title"] = "Admin - Trilha de Auditoria";
 }
 
-<div class="container py-4">
-    <p class="text-uppercase text-muted fw-semibold mb-1">Administração · Governança</p>
-    <h1 class="h3 mb-4">Trilha de Auditoria</h1>
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-warning">@Model.ErrorMessage</div>
+}
 
-    @if (Model.ErrorMessage is not null)
-    {
-        <div class="alert alert-warning">@Model.ErrorMessage</div>
-    }
-
-    <div class="card mb-4">
-        <div class="card-header">Filtros</div>
-        <div class="card-body">
-            <form method="get" class="row g-2">
-                <div class="col-3">
-                    <label class="form-label small">Entity Type</label>
-                    <input class="form-control" name="entityType" value="@Model.EntityType" placeholder="Order, Carrier..." />
-                </div>
-                <div class="col-3">
-                    <label class="form-label small">Action</label>
-                    <input class="form-control" name="action" value="@Model.Action" placeholder="CancelOrder..." />
-                </div>
-                <div class="col-3">
-                    <label class="form-label small">Admin User</label>
-                    <input class="form-control" name="adminUserId" value="@Model.AdminUserId" />
-                </div>
-                <div class="col-3 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
-                </div>
-            </form>
-        </div>
+<div class="card mb-4">
+    <div class="card-header">Filtros</div>
+    <div class="card-body">
+        <form method="get" class="row g-2">
+            <div class="col-3">
+                <label class="form-label small">Entity Type</label>
+                <input class="form-control" name="entityType" value="@Model.EntityType" placeholder="Order, Carrier..." />
+            </div>
+            <div class="col-3">
+                <label class="form-label small">Action</label>
+                <input class="form-control" name="action" value="@Model.Action" placeholder="CancelOrder..." />
+            </div>
+            <div class="col-3">
+                <label class="form-label small">Admin User</label>
+                <input class="form-control" name="adminUserId" value="@Model.AdminUserId" />
+            </div>
+            <div class="col-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+            </div>
+        </form>
     </div>
-
-    <table class="table table-sm table-striped">
-        <thead>
-            <tr>
-                <th>Quando</th>
-                <th>Admin</th>
-                <th>Ação</th>
-                <th>Entidade</th>
-                <th>Entity Id</th>
-                <th>Correlation Id</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var entry in Model.Entries)
-            {
-                <tr>
-                    <td>@entry.CreatedAt</td>
-                    <td>@entry.AdminUserId</td>
-                    <td>@entry.Action</td>
-                    <td>@entry.EntityType</td>
-                    <td><code>@entry.EntityId</code></td>
-                    <td><code class="small">@entry.CorrelationId</code></td>
-                </tr>
-            }
-        </tbody>
-    </table>
 </div>
+
+<table class="table table-sm table-striped">
+    <thead>
+        <tr>
+            <th>Quando</th>
+            <th>Admin</th>
+            <th>Ação</th>
+            <th>Entidade</th>
+            <th>Entity Id</th>
+            <th>Correlation Id</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entry in Model.Entries)
+        {
+            <tr>
+                <td>@entry.CreatedAt</td>
+                <td>@entry.AdminUserId</td>
+                <td>@entry.Action</td>
+                <td>@entry.EntityType</td>
+                <td><code>@entry.EntityId</code></td>
+                <td><code class="small">@entry.CorrelationId</code></td>
+            </tr>
+        }
+    </tbody>
+</table>
