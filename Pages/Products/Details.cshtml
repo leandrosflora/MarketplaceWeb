@@ -8,9 +8,21 @@
 <div class="container py-4">
     <div class="row g-4">
         <div class="col-lg-7">
-            <div class="marketplace-card product-image-placeholder">
-                <span>Imagem do produto</span>
-            </div>
+            @if (!string.IsNullOrWhiteSpace(Model.ProductPage.Product.ImageUrl))
+            {
+                <div class="marketplace-card product-image-frame">
+                    <img src="@Model.ProductPage.Product.ImageUrl"
+                         alt="@Model.ProductPage.Product.Title"
+                         class="product-image"
+                         onerror="this.replaceWith(Object.assign(document.createElement('div'), { className: 'marketplace-card product-image-placeholder', innerHTML: '&lt;span&gt;Imagem do produto&lt;/span&gt;' }))" />
+                </div>
+            }
+            else
+            {
+                <div class="marketplace-card product-image-placeholder">
+                    <span>Imagem do produto</span>
+                </div>
+            }
         </div>
 
         <div class="col-lg-5">
@@ -28,41 +40,48 @@
 
                 <div asp-validation-summary="All" class="text-danger"></div>
 
-                <form method="post">
-                    <input type="hidden" name="id" value="@Model.Id" />
+                @if (Model.ProductPage.Product.AvailableForSale)
+                {
+                    <form method="post">
+                        <input type="hidden" name="id" value="@Model.Id" />
 
-                    <div class="mb-3">
-                        <label asp-for="ZipCode" class="form-label">Calcular prazo e frete</label>
-                        <input asp-for="ZipCode"
-                               class="form-control"
-                               placeholder="00000-000"
-                               data-mask="cep"
-                               inputmode="numeric"
-                               maxlength="9"
-                               pattern="\d{5}-\d{3}"
-                               title="Informe um CEP no formato 00000-000"
-                               required />
-                    </div>
+                        <div class="mb-3">
+                            <label asp-for="ZipCode" class="form-label">Calcular prazo e frete</label>
+                            <input asp-for="ZipCode"
+                                   class="form-control"
+                                   placeholder="00000-000"
+                                   data-mask="cep"
+                                   inputmode="numeric"
+                                   maxlength="9"
+                                   pattern="\d{5}-\d{3}"
+                                   title="Informe um CEP no formato 00000-000"
+                                   required />
+                        </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Quantity" class="form-label">Quantidade</label>
-                        <input asp-for="Quantity" type="number" min="1" max="99" class="form-control" />
-                    </div>
+                        <div class="mb-3">
+                            <label asp-for="Quantity" class="form-label">Quantidade</label>
+                            <input asp-for="Quantity" type="number" min="1" max="99" class="form-control" />
+                        </div>
 
-                    <button type="submit"
-                            formmethod="get"
-                            data-loading-text="Calculando..."
-                            class="btn btn-outline-primary w-100">
-                        Calcular entrega
-                    </button>
+                        <button type="submit"
+                                formmethod="get"
+                                data-loading-text="Calculando..."
+                                class="btn btn-outline-primary w-100">
+                            Calcular entrega
+                        </button>
 
-                    <button type="submit"
-                            asp-page-handler="AddToCart"
-                            data-loading-text="Adicionando..."
-                            class="btn btn-success btn-lg w-100 mt-4">
-                        Adicionar ao carrinho
-                    </button>
-                </form>
+                        <button type="submit"
+                                asp-page-handler="AddToCart"
+                                data-loading-text="Adicionando..."
+                                class="btn btn-success btn-lg w-100 mt-4">
+                            Adicionar ao carrinho
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">Este produto não pode ser comprado no momento.</p>
+                }
 
                 @if (Model.ProductPage.Shipping is not null)
                 {

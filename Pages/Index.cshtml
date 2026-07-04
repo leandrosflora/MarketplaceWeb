@@ -5,87 +5,66 @@
 }
 
 <div class="container py-4">
-    <section class="marketplace-card marketplace-hero p-5 text-center">
-        <p class="marketplace-eyebrow mb-2">Experiência padronizada</p>
-        <h1 class="display-5 fw-semibold">Marketplace Web</h1>
-        <p class="lead mb-0">
-            Frontend Razor Pages server-side integrado ao BFF por HTTP para testar os fluxos do marketplace.
-        </p>
-    </section>
-
-    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    @if (Model.FeaturedProducts.Count > 0)
     {
-        <div class="alert alert-danger mt-4" role="alert">
-            Não foi possível carregar os produtos agora. @Model.ErrorMessage
-        </div>
-    }
-    else
-    {
-        <section class="mt-4">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <h2 class="h4 mb-0">Produtos disponíveis</h2>
-                <span class="text-muted">@Model.TotalCount produto(s)</span>
+        <div id="offersCarousel" class="carousel slide marketplace-card offers-carousel" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                @for (var i = 0; i < Model.FeaturedProducts.Count; i++)
+                {
+                    <button type="button"
+                            data-bs-target="#offersCarousel"
+                            data-bs-slide-to="@i"
+                            class="@(i == 0 ? "active" : "")"
+                            aria-current="@(i == 0 ? "true" : "false")"
+                            aria-label="Oferta @(i + 1)"></button>
+                }
             </div>
 
-            @if (Model.Products.Count == 0)
-            {
-                <div class="marketplace-card p-4 text-center text-muted">
-                    Nenhum produto disponível no momento.
-                </div>
-            }
-            else
-            {
-                <div class="row g-3">
-                    @foreach (var product in Model.Products)
-                    {
-                        <div class="col-md-6 col-xl-4">
-                            <article class="marketplace-card product-search-card h-100 p-4">
-                                <div class="text-muted small mb-2">@product.Category</div>
-                                <h3 class="h5 mb-3">
-                                    <a asp-page="/Products/Details"
-                                       asp-route-id="@product.SkuId"
-                                       class="stretched-link text-decoration-none">
-                                        @product.Title
-                                    </a>
-                                </h3>
-                                <div class="product-search-price mb-3">@product.Price.ToString("C")</div>
-                                <div class="d-flex align-items-center justify-content-between gap-2">
-                                    @if (product.AvailableForSale)
-                                    {
-                                        <span class="badge text-bg-success">Disponível</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge text-bg-secondary">@product.Status</span>
-                                    }
-
-                                    @if (product.Score is not null)
-                                    {
-                                        <span class="text-muted small">Score @product.Score.Value.ToString("0.##")</span>
-                                    }
-                                </div>
-                            </article>
-                        </div>
-                    }
-                </div>
-
-                @if (Model.TotalPages > 1)
+            <div class="carousel-inner">
+                @for (var i = 0; i < Model.FeaturedProducts.Count; i++)
                 {
-                    <div class="d-flex justify-content-between align-items-center mt-3">
-                        <span class="text-muted small">Página @Model.PageNumber de @Model.TotalPages &middot; @Model.TotalCount produtos</span>
-                        <nav aria-label="Paginação de produtos">
-                            <ul class="pagination pagination-sm mb-0">
-                                <li class="page-item @(Model.PageNumber <= 1 ? "disabled" : "")">
-                                    <a class="page-link" href="@Model.PageUrl(Model.PageNumber - 1)">Anterior</a>
-                                </li>
-                                <li class="page-item @(Model.PageNumber >= Model.TotalPages ? "disabled" : "")">
-                                    <a class="page-link" href="@Model.PageUrl(Model.PageNumber + 1)">Próxima</a>
-                                </li>
-                            </ul>
-                        </nav>
+                    var product = Model.FeaturedProducts[i];
+                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                        <div class="offer-slide">
+                            <div class="offer-slide-media">
+                                @if (!string.IsNullOrWhiteSpace(product.ImageUrl))
+                                {
+                                    <img src="@product.ImageUrl"
+                                         alt="@product.Title"
+                                         class="offer-slide-image"
+                                         onerror="this.style.display='none'" />
+                                }
+                            </div>
+                            <div class="offer-slide-info">
+                                <p class="marketplace-eyebrow mb-2">Oferta em destaque</p>
+                                <h1 class="h3 mb-2">@product.Title</h1>
+                                <div class="product-price mb-3">@product.Price.ToString("C")</div>
+                                <a asp-page="/Products/Details"
+                                   asp-route-id="@product.SkuId"
+                                   class="btn btn-primary">
+                                    Ver oferta
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 }
+            </div>
+
+            @if (Model.FeaturedProducts.Count > 1)
+            {
+                <button class="carousel-control-prev" type="button" data-bs-target="#offersCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Anterior</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#offersCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Próxima</span>
+                </button>
             }
-        </section>
+        </div>
     }
+
+    <div id="product-grid">
+        @await Html.PartialAsync("_ProductGridPartial", Model)
+    </div>
 </div>

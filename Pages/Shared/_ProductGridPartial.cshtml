@@ -1,0 +1,94 @@
+@model MarketplaceWeb.Pages.IndexModel
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <div class="alert alert-danger mt-4" role="alert">
+        Não foi possível carregar os produtos agora. @Model.ErrorMessage
+    </div>
+}
+else
+{
+    <section class="mt-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h2 class="h4 mb-0">Produtos disponíveis</h2>
+            <span class="text-muted">@Model.TotalCount produto(s)</span>
+        </div>
+
+        @if (Model.Products.Count == 0)
+        {
+            <div class="marketplace-card p-4 text-center text-muted">
+                Nenhum produto disponível no momento.
+            </div>
+        }
+        else
+        {
+            <div class="row g-2 row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
+                @foreach (var product in Model.Products)
+                {
+                    <div class="col">
+                        <article class="marketplace-card product-search-card h-100 p-2">
+                            <div class="product-search-thumb mb-2">
+                                @if (!string.IsNullOrWhiteSpace(product.ImageUrl))
+                                {
+                                    <img src="@product.ImageUrl"
+                                         alt="@product.Title"
+                                         class="product-search-image"
+                                         onerror="this.replaceWith(Object.assign(document.createElement('div'), { className: 'product-search-image-placeholder', innerHTML: '&lt;span&gt;Sem imagem&lt;/span&gt;' }))" />
+                                }
+                                else
+                                {
+                                    <div class="product-search-image-placeholder"><span>Sem imagem</span></div>
+                                }
+                            </div>
+                            <div class="text-muted small mb-1">@product.Category</div>
+                            <h3 class="product-search-title mb-1">
+                                <a asp-page="/Products/Details"
+                                   asp-route-id="@product.SkuId"
+                                   class="stretched-link text-decoration-none">
+                                    @product.Title
+                                </a>
+                            </h3>
+                            <div class="product-search-price mb-1">@product.Price.ToString("C")</div>
+                            <div class="d-flex align-items-center justify-content-between gap-2">
+                                @if (product.AvailableForSale)
+                                {
+                                    <span class="badge text-bg-success">Disponível</span>
+                                }
+                                else
+                                {
+                                    <span class="badge text-bg-secondary">@product.Status</span>
+                                }
+
+                                @if (product.Score is not null)
+                                {
+                                    <span class="text-muted small">Score @product.Score.Value.ToString("0.##")</span>
+                                }
+                            </div>
+                        </article>
+                    </div>
+                }
+            </div>
+
+            @if (Model.TotalPages > 1)
+            {
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="text-muted small">Página @Model.PageNumber de @Model.TotalPages &middot; @Model.TotalCount produtos</span>
+                    <nav aria-label="Paginação de produtos">
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item @(Model.PageNumber <= 1 ? "disabled" : "")">
+                                <a class="page-link"
+                                   href="@Model.PageUrl(Model.PageNumber - 1)"
+                                   data-ajax-href="@Model.AjaxPageUrl(Model.PageNumber - 1)">Anterior</a>
+                            </li>
+                            <li class="page-item @(Model.PageNumber >= Model.TotalPages ? "disabled" : "")">
+                                <a class="page-link"
+                                   href="@Model.PageUrl(Model.PageNumber + 1)"
+                                   data-ajax-href="@Model.AjaxPageUrl(Model.PageNumber + 1)">Próxima</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            }
+        }
+    </section>
+}

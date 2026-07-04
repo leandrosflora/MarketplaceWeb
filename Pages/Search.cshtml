@@ -52,20 +52,33 @@
             }
             else
             {
-                <div class="row g-3">
+                <div class="row g-2 row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
                     @foreach (var product in Model.Products)
                     {
-                        <div class="col-md-6 col-xl-4">
-                            <article class="marketplace-card product-search-card h-100 p-4">
-                                <div class="text-muted small mb-2">@product.Category</div>
-                                <h3 class="h5 mb-3">
+                        <div class="col">
+                            <article class="marketplace-card product-search-card h-100 p-2">
+                                <div class="product-search-thumb mb-2">
+                                    @if (!string.IsNullOrWhiteSpace(product.ImageUrl))
+                                    {
+                                        <img src="@product.ImageUrl"
+                                             alt="@product.Title"
+                                             class="product-search-image"
+                                             onerror="this.replaceWith(Object.assign(document.createElement('div'), { className: 'product-search-image-placeholder', innerHTML: '&lt;span&gt;Sem imagem&lt;/span&gt;' }))" />
+                                    }
+                                    else
+                                    {
+                                        <div class="product-search-image-placeholder"><span>Sem imagem</span></div>
+                                    }
+                                </div>
+                                <div class="text-muted small mb-1">@product.Category</div>
+                                <h3 class="product-search-title mb-1">
                                     <a asp-page="/Products/Details"
                                        asp-route-id="@product.SkuId"
                                        class="stretched-link text-decoration-none">
                                         @product.Title
                                     </a>
                                 </h3>
-                                <div class="product-search-price mb-3">@product.Price.ToString("C")</div>
+                                <div class="product-search-price mb-1">@product.Price.ToString("C")</div>
                                 <div class="d-flex align-items-center justify-content-between gap-2">
                                     @if (product.AvailableForSale)
                                     {

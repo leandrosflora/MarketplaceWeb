@@ -59,4 +59,45 @@
     }
 
     document.querySelectorAll('[data-mask="cep"]').forEach(applyCepMask);
+
+    function loadProductGridPage(url, pushUrl) {
+        var container = document.getElementById('product-grid');
+
+        if (!container) {
+            return;
+        }
+
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function (response) { return response.text(); })
+            .then(function (html) {
+                container.innerHTML = html;
+
+                if (pushUrl) {
+                    history.pushState({ productGridUrl: pushUrl }, '', pushUrl);
+                }
+
+                container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+    }
+
+    document.addEventListener('click', function (event) {
+        var link = event.target.closest('#product-grid .page-link[data-ajax-href]');
+
+        if (!link || link.closest('.page-item.disabled')) {
+            return;
+        }
+
+        event.preventDefault();
+        loadProductGridPage(link.dataset.ajaxHref, link.getAttribute('href'));
+    });
+
+    window.addEventListener('popstate', function (event) {
+        if (!document.getElementById('product-grid')) {
+            return;
+        }
+
+        var query = new URLSearchParams(window.location.search);
+        query.set('handler', 'Products');
+        loadProductGridPage(window.location.pathname + '?' + query.toString(), null);
+    });
 })();

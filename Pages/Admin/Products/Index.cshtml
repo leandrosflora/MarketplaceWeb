@@ -4,6 +4,12 @@
     ViewData["Title"] = "Produtos Ofertados";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/lib/datatables/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="~/lib/datatables/css/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" href="~/lib/datatables/css/buttons.bootstrap5.min.css" />
+}
+
 @if (Model.SuccessMessage is not null)
 {
     <div class="alert alert-success">@Model.SuccessMessage</div>
@@ -17,61 +23,63 @@
     <div class="alert alert-danger" asp-validation-summary="All"></div>
 }
 
-<div class="row g-4">
-    <div class="col-lg-5">
-        <div class="card">
-            <div class="card-header"><i class="bi bi-search me-1"></i> Buscar produto por SKU</div>
-            <div class="card-body">
-                <form method="get" class="row g-2 align-items-end">
-                    <div class="col-8">
-                        <label class="form-label small">SKU ID</label>
-                        <input class="form-control" name="SkuId" value="@Model.SkuId" />
-                    </div>
-                    <div class="col-4">
-                        <button type="submit" class="btn btn-primary w-100">Buscar</button>
-                    </div>
-                </form>
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="h4 mb-0">Produtos Ofertados</h1>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createProductModal">
+        <i class="bi bi-plus-lg me-1"></i> Novo produto
+    </button>
+</div>
 
-                @if (Model.Product is { } product)
-                {
-                    <hr />
-                    <dl class="row small mb-0">
-                        <dt class="col-5">SKU</dt><dd class="col-7">@product.SkuId</dd>
-                        <dt class="col-5">Seller</dt><dd class="col-7">@product.SellerId</dd>
-                        <dt class="col-5">Título</dt><dd class="col-7">@product.Title</dd>
-                        <dt class="col-5">Categoria</dt><dd class="col-7">@product.Category</dd>
-                        <dt class="col-5">Preço</dt><dd class="col-7">@product.Price.ToString("C")</dd>
-                        <dt class="col-5">Status</dt><dd class="col-7"><span class="badge text-bg-secondary">@product.Status</span></dd>
-                    </dl>
-
-                    <form method="post" asp-page-handler="ChangeStatus" class="row g-2 align-items-end mt-2">
-                        <input type="hidden" name="skuId" value="@product.SkuId" />
-                        <div class="col-7">
-                            <label class="form-label small">Novo status</label>
-                            <select class="form-select" name="status">
-                                <option value="Active">Active</option>
-                                <option value="Paused">Paused</option>
-                                <option value="Blocked">Blocked</option>
+<table id="products-table" class="table table-sm table-striped w-100">
+    <thead>
+        <tr>
+            <th>SKU</th>
+            <th>Título</th>
+            <th>Categoria</th>
+            <th>Preço</th>
+            <th>Status</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model.Products)
+        {
+            <tr>
+                <td>@product.SkuId</td>
+                <td>@product.Title</td>
+                <td>@product.Category</td>
+                <td data-order="@product.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)">@product.Price.ToString("C")</td>
+                <td><span class="badge text-bg-secondary">@product.Status</span></td>
+                <td>
+                    <div class="d-flex flex-wrap gap-1 align-items-center">
+                        <a class="btn btn-sm btn-outline-secondary" asp-page="/Admin/Products/Logistics" asp-route-skuId="@product.SkuId">
+                            Logística
+                        </a>
+                        <form method="post" asp-page-handler="ChangeStatus" class="d-flex gap-1">
+                            <input type="hidden" name="skuId" value="@product.SkuId" />
+                            <select name="status" class="form-select form-select-sm">
+                                <option value="Active" selected="@(product.Status == "Active")">Active</option>
+                                <option value="Paused" selected="@(product.Status == "Paused")">Paused</option>
+                                <option value="Blocked" selected="@(product.Status == "Blocked")">Blocked</option>
                             </select>
-                        </div>
-                        <div class="col-5">
-                            <button type="submit" class="btn btn-outline-secondary w-100">Alterar status</button>
-                        </div>
-                    </form>
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">Alterar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
-                    <a class="btn btn-link px-0 mt-2" asp-page="/Admin/Products/Logistics" asp-route-skuId="@product.SkuId">
-                        Editar atributos logísticos <i class="bi bi-arrow-right"></i>
-                    </a>
-                }
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-7">
-        <div class="card">
-            <div class="card-header"><i class="bi bi-plus-lg me-1"></i> Criar produto</div>
-            <div class="card-body">
-                <form method="post" asp-page-handler="Create">
+<div class="modal fade" id="createProductModal" tabindex="-1" aria-labelledby="createProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Create">
+                <div class="modal-header">
+                    <h2 class="modal-title h5" id="createProductModalLabel">Criar produto</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
                     <div class="row g-2">
                         <div class="col-6">
                             <label class="form-label small">SKU ID</label>
@@ -118,10 +126,42 @@
                             <label class="form-check-label" asp-for="CreateInput.IsRestricted">Restrito</label>
                         </div>
                     </div>
-
-                    <button type="submit" class="btn btn-primary mt-3">Criar produto</button>
-                </form>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Criar produto</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/lib/datatables/js/jszip.min.js"></script>
+    <script src="~/lib/datatables/js/pdfmake.min.js"></script>
+    <script src="~/lib/datatables/js/vfs_fonts.js"></script>
+    <script src="~/lib/datatables/js/dataTables.buttons.min.js"></script>
+    <script src="~/lib/datatables/js/buttons.bootstrap5.min.js"></script>
+    <script src="~/lib/datatables/js/buttons.html5.min.js"></script>
+    <script src="~/lib/datatables/js/buttons.print.min.js"></script>
+    <script>
+        $(function () {
+            $('#products-table').DataTable({
+                order: [[1, 'asc']],
+                columnDefs: [{ targets: -1, orderable: false }],
+                dom: '<"d-flex justify-content-between align-items-center mb-2"Bf>rt<"d-flex justify-content-between align-items-center mt-2"lp>',
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+            });
+
+            @if (Model.ShowCreateModal)
+            {
+                <text>
+                var createProductModal = new bootstrap.Modal(document.getElementById('createProductModal'));
+                createProductModal.show();
+                </text>
+            }
+        });
+    </script>
+}

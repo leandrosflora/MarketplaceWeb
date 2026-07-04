@@ -8,6 +8,8 @@ public interface IMarketplaceAdminBffClient
 
     Task<AdminProductResponse?> GetProductAsync(Guid skuId, CancellationToken cancellationToken);
 
+    Task<IReadOnlyList<AdminProductResponse>> ListProductsAsync(CancellationToken cancellationToken);
+
     Task<AdminProductResponse> UpdateProductLogisticsAsync(Guid skuId, UpdateAdminProductLogisticsRequest request, CancellationToken cancellationToken);
 
     Task<AdminProductResponse> ChangeProductStatusAsync(Guid skuId, ChangeAdminProductStatusRequest request, CancellationToken cancellationToken);

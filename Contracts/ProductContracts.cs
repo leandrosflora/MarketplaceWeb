@@ -22,7 +22,8 @@ public sealed record ProductSummary(
     string Title,
     string Category,
     decimal Price,
-    bool AvailableForSale);
+    bool AvailableForSale,
+    string? ImageUrl = null);
 
 public sealed record ShippingSummary(
     bool Available,
@@ -44,18 +45,23 @@ public sealed class ProductSearchResponse
         init => Products = value ?? [];
     }
 
-    [JsonPropertyName("page")]
-    public int? Page { get; init; }
+    // MarketplaceWeb.Bff's /api/web/v1/products/search wraps pagination as
+    // { "pagination": { "page", "pageSize", "total" } }, not flat totalItems/totalPages
+    // fields on the root object.
+    [JsonPropertyName("pagination")]
+    public ProductSearchPagination? Pagination { get; init; }
 
-    [JsonPropertyName("pageSize")]
-    public int? PageSize { get; init; }
+    public int? Page => Pagination?.Page;
 
-    [JsonPropertyName("totalItems")]
-    public int? TotalItems { get; init; }
+    public int? PageSize => Pagination?.PageSize;
 
-    [JsonPropertyName("totalPages")]
-    public int? TotalPages { get; init; }
+    public int? TotalItems => Pagination?.Total;
 }
+
+public sealed record ProductSearchPagination(
+    [property: JsonPropertyName("page")] int Page,
+    [property: JsonPropertyName("pageSize")] int PageSize,
+    [property: JsonPropertyName("total")] int Total);
 
 public sealed record ProductSearchItem(
     Guid SkuId,
@@ -64,7 +70,8 @@ public sealed record ProductSearchItem(
     string Category,
     decimal Price,
     string Status,
-    decimal? Score = null)
+    decimal? Score = null,
+    string? ImageUrl = null)
 {
     public bool AvailableForSale => string.Equals(
         Status,

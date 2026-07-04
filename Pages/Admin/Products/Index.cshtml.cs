@@ -14,36 +14,32 @@ public sealed class IndexModel : PageModel
         _client = client;
     }
 
-    [BindProperty(SupportsGet = true)]
-    public Guid? SkuId { get; set; }
-
     [BindProperty]
     public CreateProductInput CreateInput { get; set; } = new();
 
-    public AdminProductResponse? Product { get; private set; }
+    public IReadOnlyList<AdminProductResponse> Products { get; private set; } = [];
 
     public string? ErrorMessage { get; private set; }
+
+    public bool ShowCreateModal { get; private set; }
 
     [TempData]
     public string? SuccessMessage { get; set; }
 
     public async Task OnGetAsync(CancellationToken cancellationToken)
     {
-        if (SkuId is { } skuId)
-        {
-            try
-            {
-                Product = await _client.GetProductAsync(skuId, cancellationToken);
+        await LoadProductsAsync(cancellationToken);
+    }
 
-                if (Product is null)
-                {
-                    ErrorMessage = $"Nenhum produto encontrado para o SKU {skuId}.";
-                }
-            }
-            catch (BffApiException exception)
-            {
-                ErrorMessage = exception.Message;
-            }
+    private async Task LoadProductsAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            Products = await _client.ListProductsAsync(cancellationToken);
+        }
+        catch (BffApiException exception)
+        {
+            ErrorMessage = exception.Message;
         }
     }
 
@@ -51,6 +47,8 @@ public sealed class IndexModel : PageModel
     {
         if (!ModelState.IsValid)
         {
+            ShowCreateModal = true;
+            await LoadProductsAsync(cancellationToken);
             return Page();
         }
 
@@ -70,11 +68,13 @@ public sealed class IndexModel : PageModel
             var created = await _client.CreateProductAsync(request, cancellationToken);
 
             SuccessMessage = $"Produto {created.SkuId} criado com sucesso.";
-            return RedirectToPage("/Admin/Products/Index", new { skuId = created.SkuId });
+            return RedirectToPage("/Admin/Products/Index");
         }
         catch (BffApiException exception)
         {
             ModelState.AddModelError(string.Empty, exception.Message);
+            ShowCreateModal = true;
+            await LoadProductsAsync(cancellationToken);
             return Page();
         }
     }
@@ -92,16 +92,7 @@ public sealed class IndexModel : PageModel
             ErrorMessage = exception.Message;
         }
 
-        SkuId = skuId;
-
-        try
-        {
-            Product = await _client.GetProductAsync(skuId, cancellationToken);
-        }
-        catch (BffApiException exception)
-        {
-            ErrorMessage ??= exception.Message;
-        }
+        await LoadProductsAsync(cancellationToken);
 
         return Page();
     }

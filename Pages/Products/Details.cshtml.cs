@@ -44,6 +44,13 @@ public sealed class DetailsModel : PageModel
             return NotFound();
         }
 
+        if (!ProductPage.Product.AvailableForSale)
+        {
+            ModelState.AddModelError(string.Empty, "Este produto não pode ser comprado no momento.");
+
+            return Page();
+        }
+
         var cartOwnerId = _cartOwnerIdAccessor.GetOrCreateCartOwnerId(HttpContext);
 
         await _bffClient.AddCartItemAsync(

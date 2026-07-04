@@ -38,6 +38,14 @@ public sealed class MarketplaceAdminBffClient : IMarketplaceAdminBffClient
         return await response.Content.ReadFromJsonAsync<AdminProductResponse>(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<AdminProductResponse>> ListProductsAsync(CancellationToken cancellationToken)
+    {
+        using var response = await _httpClient.GetAsync("/admin/products", cancellationToken);
+        await EnsureSuccessAsync(response, cancellationToken);
+
+        return await response.Content.ReadFromJsonAsync<IReadOnlyList<AdminProductResponse>>(cancellationToken) ?? [];
+    }
+
     public async Task<AdminProductResponse> UpdateProductLogisticsAsync(Guid skuId, UpdateAdminProductLogisticsRequest request, CancellationToken cancellationToken)
     {
         using var httpRequest = new HttpRequestMessage(HttpMethod.Put, $"/admin/products/{skuId}/logistics")
