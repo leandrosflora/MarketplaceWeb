@@ -10,7 +10,7 @@
     --marketplace-secondary: #00a650;
     --marketplace-secondary-hover: #008f45;
     --marketplace-warning: #fff159;
-    --marketplace-header: linear-gradient(135deg, #1ab394 0%, #18a689 100%);
+    --marketplace-header: linear-gradient(135deg, #3fdcae 0%, #1dc298 100%);
     --marketplace-text: #333333;
     --marketplace-muted: #737373;
     --marketplace-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
@@ -29,7 +29,7 @@ body {
     min-height: 100vh;
     margin-bottom: 60px;
     background:
-        radial-gradient(circle at top left, rgba(26, 179, 148, 0.16), transparent 30rem),
+        radial-gradient(circle at top left, rgba(63, 220, 174, 0.16), transparent 30rem),
         var(--marketplace-background);
     color: var(--marketplace-text);
     font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -166,17 +166,32 @@ main {
 }
 
 .offers-carousel {
+    position: relative;
     overflow: hidden;
     border: 1px solid rgba(52, 131, 250, 0.12);
+    background: linear-gradient(125deg, #e3fff5 0%, #c9f3e3 32%, #cfe6ff 70%, #eef4ff 100%);
+}
+
+.offers-carousel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.65), transparent 55%),
+        linear-gradient(135deg, rgba(29, 194, 152, 0.16), transparent 60%, rgba(52, 131, 250, 0.14));
+    pointer-events: none;
 }
 
 .offer-slide {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     gap: 2rem;
     min-height: 320px;
     padding: 2.5rem;
-    background: linear-gradient(135deg, #fff 0%, #e8faf5 52%, #e8f1ff 100%);
+    background: transparent;
 }
 
 .offer-slide-media {
@@ -336,13 +351,14 @@ main {
 
 .product-search-card {
     position: relative;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    border-radius: var(--marketplace-radius-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .product-search-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-4px);
     border-color: rgba(52, 131, 250, 0.35);
-    box-shadow: var(--marketplace-shadow);
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
 }
 
 .product-search-title {
@@ -352,30 +368,36 @@ main {
 }
 
 .product-search-price {
-    font-size: 1rem;
-    font-weight: 500;
+    font-size: 1.05rem;
+    font-weight: 700;
     letter-spacing: -0.02em;
+    color: var(--marketplace-secondary);
 }
 
 .product-search-thumb {
-    height: 80px;
+    height: 96px;
     display: grid;
     place-items: center;
     overflow: hidden;
     border-radius: var(--marketplace-radius-sm);
-    background: linear-gradient(135deg, #f8fafc, #ffffff);
+    background: linear-gradient(135deg, #f2fbf8, #eef5ff);
 }
 
 .product-search-image {
     width: 100%;
-    height: 80px;
+    height: 96px;
     object-fit: contain;
-    background: #ffffff;
+    background: transparent;
+    transition: transform 0.3s ease;
+}
+
+.product-search-card:hover .product-search-image {
+    transform: scale(1.06);
 }
 
 .product-search-image-placeholder {
     width: 100%;
-    height: 80px;
+    height: 96px;
     display: grid;
     place-items: center;
     color: var(--marketplace-muted);

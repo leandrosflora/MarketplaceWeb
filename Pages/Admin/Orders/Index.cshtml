@@ -39,7 +39,7 @@
 <div class="card">
     <div class="card-header">
         <i class="bi bi-receipt me-1"></i> Pedidos
-        <span class="badge text-bg-secondary float-end">@Model.Orders.Count</span>
+        <span class="badge bg-secondary float-end">@Model.Orders.Count</span>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -62,7 +62,7 @@
                             <td><code>@order.Id</code></td>
                             <td><code>@order.BuyerId</code></td>
                             <td><code>@order.SellerId</code></td>
-                            <td><span class="badge text-bg-light border">@order.Status</span></td>
+                            <td><span class="badge bg-light text-dark border">@order.Status</span></td>
                             <td data-order="@order.TotalAmount.ToString(System.Globalization.CultureInfo.InvariantCulture)">@order.Currency @order.TotalAmount</td>
                             <td>@order.CreatedAt</td>
                             <td><a asp-page="/Admin/Orders/Detail" asp-route-orderId="@order.Id">Detalhes</a></td>

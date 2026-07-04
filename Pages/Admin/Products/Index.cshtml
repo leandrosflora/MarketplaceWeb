@@ -47,7 +47,7 @@
                 <td>@product.Title</td>
                 <td>@product.Category</td>
                 <td data-order="@product.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)">@product.Price.ToString("C")</td>
-                <td><span class="badge text-bg-secondary">@product.Status</span></td>
+                <td><span class="badge bg-secondary">@product.Status</span></td>
                 <td>
                     <div class="d-flex flex-wrap gap-1 align-items-center">
                         <a class="btn btn-sm btn-outline-secondary" asp-page="/Admin/Products/Logistics" asp-route-skuId="@product.SkuId">
