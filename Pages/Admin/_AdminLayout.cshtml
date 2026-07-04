@@ -52,6 +52,15 @@
             <div class="admin-page-heading">
                 <div class="eyebrow">Painel administrativo</div>
                 <h1>@ViewData["Title"]</h1>
+                <div class="d-flex align-items-center gap-2 mt-2">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <span class="text-muted small">@User.Identity.Name</span>
+                        <form method="post" asp-page="/Account/Logout" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">Sair</button>
+                        </form>
+                    }
+                </div>
             </div>
 
             <div class="admin-content">

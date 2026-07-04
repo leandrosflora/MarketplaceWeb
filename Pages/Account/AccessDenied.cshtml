@@ -1,0 +1,15 @@
+@page
+@model Marketplace.Web.Pages.Account.AccessDeniedModel
+
+@{
+    ViewData["Title"] = "Acesso negado";
+}
+
+<div class="container py-4">
+    <section class="marketplace-card">
+        <div class="marketplace-eyebrow">Permissao insuficiente</div>
+        <h1 class="h3 mb-2">Acesso negado</h1>
+        <p class="text-muted mb-3">Seu usuario nao possui permissao para acessar esta area.</p>
+        <a asp-page="/Index" class="btn btn-primary">Voltar para a loja</a>
+    </section>
+</div>

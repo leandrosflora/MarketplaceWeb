@@ -1,0 +1,44 @@
+@page
+@model Marketplace.Web.Pages.Account.LoginModel
+
+@{
+    ViewData["Title"] = "Entrar";
+}
+
+<div class="container py-4">
+    <section class="marketplace-card marketplace-hero mb-4">
+        <div class="marketplace-eyebrow">Acesso seguro</div>
+        <h1 class="h2 mb-2">Entrar no MarketPlace</h1>
+        <p class="text-muted mb-0">Use seu login para acessar pedidos e ferramentas do backoffice.</p>
+    </section>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-5">
+            <section class="marketplace-card">
+                <form method="post">
+                    <input type="hidden" asp-for="ReturnUrl" />
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.Username" class="form-label"></label>
+                        <input asp-for="Input.Username" class="form-control" autocomplete="username" autofocus />
+                        <span asp-validation-for="Input.Username" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Input.Password" class="form-label"></label>
+                        <input asp-for="Input.Password" class="form-control" autocomplete="current-password" />
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100" data-loading-text="Entrando...">Entrar</button>
+                </form>
+            </section>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

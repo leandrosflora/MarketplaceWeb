@@ -1,12 +1,21 @@
 using System.Net.Http.Headers;
 using Marketplace.Web.Clients;
+using Marketplace.Web.Infrastructure.Auth;
 using Marketplace.Web.Infrastructure;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Http.Resilience;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var razorPages = builder.Services.AddRazorPages();
+var razorPages = builder.Services.AddRazorPages(options =>
+{
+    options.Conventions.AuthorizeFolder("/Orders");
+    options.Conventions.AuthorizeFolder("/Admin", MarketplaceAuthConstants.AdminPolicy);
+    options.Conventions.AllowAnonymousToPage("/Account/Login");
+    options.Conventions.AllowAnonymousToPage("/Account/Logout");
+    options.Conventions.AllowAnonymousToPage("/Account/AccessDenied");
+});
 
 razorPages.AddMvcOptions(options =>
 {
@@ -14,6 +23,31 @@ razorPages.AddMvcOptions(options =>
 });
 
 builder.Services.AddProblemDetails();
+
+builder.Services.Configure<MarketplaceAuthOptions>(
+    builder.Configuration.GetSection(MarketplaceAuthOptions.SectionName));
+builder.Services.AddSingleton<IMarketplaceCredentialValidator, MarketplaceCredentialValidator>();
+
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = "MarketplaceWeb.Auth";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.SlidingExpiration = true;
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(
+        MarketplaceAuthConstants.AdminPolicy,
+        policy => policy.RequireRole(MarketplaceAuthConstants.AdminRoles));
+});
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<CorrelationIdHandler>();
@@ -84,5 +118,9 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapRazorPages();
 app.Run();
+
+public partial class Program;

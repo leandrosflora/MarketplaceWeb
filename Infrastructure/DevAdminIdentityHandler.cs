@@ -1,28 +1,49 @@
+using System.Security.Claims;
+using Marketplace.Web.Infrastructure.Auth;
+using Microsoft.Extensions.Options;
+
 namespace Marketplace.Web.Infrastructure;
 
 /// <summary>
-/// Interim stand-in for a real logged-in admin identity: attaches a fixed operator id and role
-/// set to every call to MarketplaceAdmin.Bff, read from configuration. MarketplaceWeb has no
-/// authentication system yet (see openspec/changes/admin-backoffice/design.md, Open Questions),
-/// so there is no session to derive a real caller/roles from. Replace this handler once real
-/// admin login exists; the Admin BFF only depends on the X-Admin-User-Id/X-Admin-Roles headers,
-/// so nothing downstream needs to change when it does.
+/// Propagates the authenticated admin identity expected by MarketplaceAdmin.Bff.
 /// </summary>
 public sealed class DevAdminIdentityHandler : DelegatingHandler
 {
     private readonly IConfiguration _configuration;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IOptionsMonitor<MarketplaceAuthOptions> _authOptions;
 
-    public DevAdminIdentityHandler(IConfiguration configuration)
+    public DevAdminIdentityHandler(
+        IConfiguration configuration,
+        IHttpContextAccessor httpContextAccessor,
+        IOptionsMonitor<MarketplaceAuthOptions> authOptions)
     {
         _configuration = configuration;
+        _httpContextAccessor = httpContextAccessor;
+        _authOptions = authOptions;
     }
 
     protected override Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        var userId = _configuration["AdminBff:DevIdentity:UserId"];
-        var roles = _configuration["AdminBff:DevIdentity:Roles"];
+        var principal = _httpContextAccessor.HttpContext?.User;
+        var userId = principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+        var roles = principal is null
+            ? null
+            : string.Join(
+                ',',
+                principal.FindAll(ClaimTypes.Role)
+                    .Select(claim => claim.Value)
+                    .Where(role => MarketplaceAuthConstants.AdminRoles.Contains(role, StringComparer.OrdinalIgnoreCase))
+                    .Distinct(StringComparer.OrdinalIgnoreCase));
+
+        if ((string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(roles))
+            && _authOptions.CurrentValue.EnableDevAdminIdentityFallback)
+        {
+            userId = _configuration["AdminBff:DevIdentity:UserId"];
+            roles = _configuration["AdminBff:DevIdentity:Roles"];
+        }
 
         if (!string.IsNullOrWhiteSpace(userId))
         {

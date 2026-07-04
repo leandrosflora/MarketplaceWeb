@@ -29,7 +29,7 @@ body {
     min-height: 100vh;
     margin-bottom: 60px;
     background:
-        radial-gradient(circle at top left, rgba(255, 241, 89, 0.22), transparent 30rem),
+        radial-gradient(circle at top left, rgba(26, 179, 148, 0.16), transparent 30rem),
         var(--marketplace-background);
     color: var(--marketplace-text);
     font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -122,6 +122,12 @@ main {
     box-shadow: var(--marketplace-shadow-sm);
 }
 
+.marketplace-search-form {
+    flex: 1 1 480px;
+    min-width: 0;
+    max-width: 600px;
+}
+
 .marketplace-header .input-group .btn {
     border: 0;
     border-radius: 0 10px 10px 0;
@@ -155,7 +161,7 @@ main {
 }
 
 .marketplace-hero {
-    background: linear-gradient(135deg, #fff 0%, #fffbe0 52%, #e8f1ff 100%);
+    background: linear-gradient(135deg, #fff 0%, #e8faf5 52%, #e8f1ff 100%);
     border: 1px solid rgba(52, 131, 250, 0.12);
 }
 
@@ -297,7 +303,12 @@ main {
         position: static;
     }
 
-    .marketplace-header .text-end {
-        text-align: start !important;
+    .marketplace-header-row {
+        flex-wrap: wrap;
+    }
+
+    .marketplace-search-form {
+        flex-basis: 100%;
+        order: 3;
     }
 }

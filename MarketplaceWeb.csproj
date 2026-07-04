@@ -10,4 +10,10 @@
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.0.*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="MarketplaceWeb.Tests\**\*.cs" />
+    <Content Remove="MarketplaceWeb.Tests\**\*" />
+    <None Remove="MarketplaceWeb.Tests\**\*" />
+  </ItemGroup>
+
 </Project>
