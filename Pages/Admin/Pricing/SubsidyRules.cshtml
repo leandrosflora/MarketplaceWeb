@@ -17,6 +17,12 @@
     <div class="alert alert-danger" asp-validation-summary="All"></div>
 }
 
+<div class="d-flex align-items-center justify-content-end mb-3">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createSubsidyRuleModal">
+        <i class="bi bi-plus-lg me-1"></i> Novo
+    </button>
+</div>
+
 <table class="table table-sm">
     <thead>
         <tr>
@@ -55,53 +61,77 @@
     </tbody>
 </table>
 
-<div class="card" style="max-width: 640px;">
-    <div class="card-header">Criar Regra de Subsídio</div>
-    <div class="card-body">
-        <form method="post" asp-page-handler="Create">
-            <div class="row g-2">
-                <div class="col-6">
-                    <label class="form-label small">Código</label>
-                    <input class="form-control" asp-for="CreateInput.Code" required />
+<div class="modal fade" id="createSubsidyRuleModal" tabindex="-1" aria-labelledby="createSubsidyRuleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Create">
+                <div class="modal-header">
+                    <h2 class="modal-title h5" id="createSubsidyRuleModalLabel">Criar Regra de Subsídio</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
-                <div class="col-6">
-                    <label class="form-label small">Seller ID (opcional)</label>
-                    <input class="form-control" asp-for="CreateInput.SellerId" />
+                <div class="modal-body">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="form-label small">Código</label>
+                            <input class="form-control" asp-for="CreateInput.Code" required />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Seller ID (opcional)</label>
+                            <input class="form-control" asp-for="CreateInput.SellerId" />
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small">Prioridade</label>
+                            <input class="form-control" type="number" min="1" asp-for="CreateInput.Priority" />
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small">Carrinho mínimo</label>
+                            <input class="form-control" type="number" step="0.01" asp-for="CreateInput.MinimumCartTotal" />
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small">Benefício máximo</label>
+                            <input class="form-control" type="number" step="0.01" asp-for="CreateInput.MaximumBenefit" />
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small">% Desconto cliente</label>
+                            <input class="form-control" type="number" step="0.01" min="0" max="100" asp-for="CreateInput.CustomerDiscountPercentage" />
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small">% Subsídio plataforma</label>
+                            <input class="form-control" type="number" step="0.01" min="0" max="100" asp-for="CreateInput.PlatformSubsidyPercentage" />
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label small">% Subsídio seller</label>
+                            <input class="form-control" type="number" step="0.01" min="0" max="100" asp-for="CreateInput.SellerSubsidyPercentage" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Início</label>
+                            <input class="form-control" type="datetime-local" asp-for="CreateInput.StartsAt" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Fim</label>
+                            <input class="form-control" type="datetime-local" asp-for="CreateInput.EndsAt" />
+                        </div>
+                    </div>
                 </div>
-                <div class="col-4">
-                    <label class="form-label small">Prioridade</label>
-                    <input class="form-control" type="number" min="1" asp-for="CreateInput.Priority" />
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Criar</button>
                 </div>
-                <div class="col-4">
-                    <label class="form-label small">Carrinho mínimo</label>
-                    <input class="form-control" type="number" step="0.01" asp-for="CreateInput.MinimumCartTotal" />
-                </div>
-                <div class="col-4">
-                    <label class="form-label small">Benefício máximo</label>
-                    <input class="form-control" type="number" step="0.01" asp-for="CreateInput.MaximumBenefit" />
-                </div>
-                <div class="col-4">
-                    <label class="form-label small">% Desconto cliente</label>
-                    <input class="form-control" type="number" step="0.01" min="0" max="100" asp-for="CreateInput.CustomerDiscountPercentage" />
-                </div>
-                <div class="col-4">
-                    <label class="form-label small">% Subsídio plataforma</label>
-                    <input class="form-control" type="number" step="0.01" min="0" max="100" asp-for="CreateInput.PlatformSubsidyPercentage" />
-                </div>
-                <div class="col-4">
-                    <label class="form-label small">% Subsídio seller</label>
-                    <input class="form-control" type="number" step="0.01" min="0" max="100" asp-for="CreateInput.SellerSubsidyPercentage" />
-                </div>
-                <div class="col-6">
-                    <label class="form-label small">Início</label>
-                    <input class="form-control" type="datetime-local" asp-for="CreateInput.StartsAt" />
-                </div>
-                <div class="col-6">
-                    <label class="form-label small">Fim</label>
-                    <input class="form-control" type="datetime-local" asp-for="CreateInput.EndsAt" />
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary mt-3">Criar</button>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            @if (Model.ShowCreateModal)
+            {
+                <text>
+                var createSubsidyRuleModal = new bootstrap.Modal(document.getElementById('createSubsidyRuleModal'));
+                createSubsidyRuleModal.show();
+                </text>
+            }
+        });
+    </script>
+}

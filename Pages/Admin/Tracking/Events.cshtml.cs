@@ -30,6 +30,8 @@ public sealed class EventsModel : PageModel
 
     public string? ErrorMessage { get; private set; }
 
+    public bool ShowCreateModal { get; private set; }
+
     [TempData]
     public string? SuccessMessage { get; set; }
 
@@ -55,6 +57,7 @@ public sealed class EventsModel : PageModel
     {
         if (!ModelState.IsValid)
         {
+            ShowCreateModal = true;
             return Page();
         }
 
@@ -85,6 +88,7 @@ public sealed class EventsModel : PageModel
         catch (BffApiException exception)
         {
             ErrorMessage = exception.Message;
+            ShowCreateModal = true;
             await LoadTrackingAsync(Input.ShipmentId, cancellationToken);
             return Page();
         }

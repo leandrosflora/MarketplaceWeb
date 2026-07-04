@@ -5,6 +5,10 @@
     var nonCancellableStatuses = new HashSet<string> { "HandedOver", "InTransit", "Delivered", "CancellationRequested", "Cancelled", "Failed" };
 }
 
+@section Styles {
+    @await Html.PartialAsync("_DataTablesAssets", "styles")
+}
+
 @if (Model.SuccessMessage is not null)
 {
     <div class="alert alert-success">@Model.SuccessMessage</div>
@@ -29,7 +33,7 @@
     </div>
 </div>
 
-<table class="table table-sm table-striped">
+<table id="shipments-table" class="table table-sm table-striped w-100">
     <thead>
         <tr>
             <th>Id</th>
@@ -38,7 +42,7 @@
             <th>Carrier</th>
             <th>Service Level</th>
             <th>Tracking Code</th>
-            <th></th>
+            <th>Ações</th>
         </tr>
     </thead>
     <tbody>
@@ -85,4 +89,17 @@
             </dl>
         </div>
     </div>
+}
+
+@section Scripts {
+    @await Html.PartialAsync("_DataTablesAssets", "scripts")
+    <script>
+        $(function () {
+            $('#shipments-table').DataTable({
+                columnDefs: [{ targets: -1, orderable: false }],
+                dom: '<"d-flex justify-content-between align-items-center mb-2"Bf>rt<"d-flex justify-content-between align-items-center mt-2"lp>',
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+            });
+        });
+    </script>
 }

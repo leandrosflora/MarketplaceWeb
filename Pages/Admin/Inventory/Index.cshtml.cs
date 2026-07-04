@@ -30,6 +30,8 @@ public sealed class IndexModel : PageModel
 
     public string? ErrorMessage { get; private set; }
 
+    public bool ShowAdjustModal { get; private set; }
+
     [TempData]
     public string? SuccessMessage { get; set; }
 
@@ -42,6 +44,7 @@ public sealed class IndexModel : PageModel
     {
         if (!ModelState.IsValid)
         {
+            ShowAdjustModal = true;
             await LoadAsync(cancellationToken);
             return Page();
         }
@@ -64,6 +67,7 @@ public sealed class IndexModel : PageModel
         catch (BffApiException exception)
         {
             ModelState.AddModelError(string.Empty, exception.Message);
+            ShowAdjustModal = true;
             await LoadAsync(cancellationToken);
             return Page();
         }

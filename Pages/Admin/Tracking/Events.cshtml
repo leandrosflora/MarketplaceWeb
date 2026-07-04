@@ -17,12 +17,50 @@
     <div class="alert alert-danger" asp-validation-summary="All"></div>
 }
 
-<div class="row">
-    <div class="col-lg-6">
-        <div class="card">
-            <div class="card-header">Novo Evento</div>
-            <div class="card-body">
-                <form method="post">
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="h4 mb-0">Inserir Evento de Tracking</h1>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTrackingEventModal">
+        <i class="bi bi-plus-lg me-1"></i> Novo Evento
+    </button>
+</div>
+
+@if (Model.CurrentTracking is { } tracking)
+{
+    <div class="card" style="max-width: 720px;">
+        <div class="card-header">Tracking Atual — @tracking.ShipmentId</div>
+        <div class="card-body">
+            <dl class="row small mb-3">
+                <dt class="col-5">Status Atual</dt><dd class="col-7">@tracking.CurrentStatus</dd>
+                <dt class="col-5">Tracking Code</dt><dd class="col-7">@tracking.TrackingCode</dd>
+                <dt class="col-5">Carrier</dt><dd class="col-7">@tracking.CarrierCode</dd>
+                <dt class="col-5">Último evento</dt><dd class="col-7">@tracking.LastEventOccurredAt</dd>
+            </dl>
+            <table class="table table-sm mb-0">
+                <thead><tr><th>Status</th><th>Descrição</th><th>Ocorrido em</th></tr></thead>
+                <tbody>
+                    @foreach (var evt in tracking.Events.OrderByDescending(e => e.OccurredAt))
+                    {
+                        <tr>
+                            <td>@evt.Status</td>
+                            <td>@evt.Description</td>
+                            <td>@evt.OccurredAt</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+<div class="modal fade" id="createTrackingEventModal" tabindex="-1" aria-labelledby="createTrackingEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post">
+                <div class="modal-header">
+                    <h2 class="modal-title h5" id="createTrackingEventModalLabel">Novo Evento</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
                     <div class="row g-2">
                         <div class="col-6">
                             <label class="form-label small">Shipment ID</label>
@@ -74,39 +112,26 @@
                             <input class="form-control" type="datetime-local" asp-for="Input.OccurredAt" />
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary mt-3">Registrar Evento</button>
-                </form>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Registrar Evento</button>
+                </div>
+            </form>
         </div>
     </div>
-
-    <div class="col-lg-6">
-        @if (Model.CurrentTracking is { } tracking)
-        {
-            <div class="card">
-                <div class="card-header">Tracking Atual — @tracking.ShipmentId</div>
-                <div class="card-body">
-                    <dl class="row small mb-3">
-                        <dt class="col-5">Status Atual</dt><dd class="col-7">@tracking.CurrentStatus</dd>
-                        <dt class="col-5">Tracking Code</dt><dd class="col-7">@tracking.TrackingCode</dd>
-                        <dt class="col-5">Carrier</dt><dd class="col-7">@tracking.CarrierCode</dd>
-                        <dt class="col-5">Último evento</dt><dd class="col-7">@tracking.LastEventOccurredAt</dd>
-                    </dl>
-                    <table class="table table-sm mb-0">
-                        <thead><tr><th>Status</th><th>Descrição</th><th>Ocorrido em</th></tr></thead>
-                        <tbody>
-                            @foreach (var evt in tracking.Events.OrderByDescending(e => e.OccurredAt))
-                            {
-                                <tr>
-                                    <td>@evt.Status</td>
-                                    <td>@evt.Description</td>
-                                    <td>@evt.OccurredAt</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        }
-    </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            @if (Model.ShowCreateModal)
+            {
+                <text>
+                var createTrackingEventModal = new bootstrap.Modal(document.getElementById('createTrackingEventModal'));
+                createTrackingEventModal.show();
+                </text>
+            }
+        });
+    </script>
+}

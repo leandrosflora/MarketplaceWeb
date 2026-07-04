@@ -4,6 +4,10 @@
     ViewData["Title"] = "Admin - Lanes / Rotas";
 }
 
+@section Styles {
+    @await Html.PartialAsync("_DataTablesAssets", "styles")
+}
+
 @if (Model.SuccessMessage is not null)
 {
     <div class="alert alert-success">@Model.SuccessMessage</div>
@@ -17,7 +21,13 @@
     <div class="alert alert-danger" asp-validation-summary="All"></div>
 }
 
-<table class="table table-sm">
+<div class="d-flex align-items-center justify-content-end mb-3">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createLaneModal">
+        <i class="bi bi-plus-lg me-1"></i> Novo
+    </button>
+</div>
+
+<table id="lanes-table" class="table table-sm w-100">
     <thead>
         <tr>
             <th>Origem</th>
@@ -27,7 +37,7 @@
             <th>Modo</th>
             <th class="text-end">Trânsito (min)</th>
             <th>Status</th>
-            <th></th>
+            <th>Ações</th>
         </tr>
     </thead>
     <tbody>
@@ -59,76 +69,107 @@
     </tbody>
 </table>
 
-<div class="card" style="max-width: 640px;">
-    <div class="card-header">Criar Lane</div>
-    <div class="card-body">
-        <form method="post" asp-page-handler="Create">
-            <div class="row g-2">
-                <div class="col-6">
-                    <label class="form-label small">Origem (Node ID)</label>
-                    <input class="form-control" asp-for="CreateInput.OriginNodeId" required />
+<div class="modal fade" id="createLaneModal" tabindex="-1" aria-labelledby="createLaneModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Create">
+                <div class="modal-header">
+                    <h2 class="modal-title h5" id="createLaneModalLabel">Criar Lane</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
-                <div class="col-6">
-                    <label class="form-label small">Destino (Node ID)</label>
-                    <input class="form-control" asp-for="CreateInput.DestinationNodeId" required />
+                <div class="modal-body">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="form-label small">Origem (Node ID)</label>
+                            <input class="form-control" asp-for="CreateInput.OriginNodeId" required />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Destino (Node ID)</label>
+                            <input class="form-control" asp-for="CreateInput.DestinationNodeId" required />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Carrier Code</label>
+                            <input class="form-control" asp-for="CreateInput.CarrierCode" required />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Service Level Code</label>
+                            <input class="form-control" asp-for="CreateInput.ServiceLevelCode" required />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Modo</label>
+                            <select class="form-select" asp-for="CreateInput.Mode">
+                                <option value="Road">Road</option>
+                                <option value="Air">Air</option>
+                                <option value="Rail">Rail</option>
+                                <option value="InternalTransfer">InternalTransfer</option>
+                                <option value="LastMile">LastMile</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Trânsito (min)</label>
+                            <input class="form-control" type="number" min="1" asp-for="CreateInput.TransitMinutes" required />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Peso máx (kg)</label>
+                            <input class="form-control" type="number" step="0.001" min="0.001" asp-for="CreateInput.MaximumWeightKg" required />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Peso cúbico máx (kg)</label>
+                            <input class="form-control" type="number" step="0.001" min="0" asp-for="CreateInput.MaximumCubicWeightKg" required />
+                        </div>
+                        <div class="col-6 form-check ms-2 mt-3">
+                            <input class="form-check-input" type="checkbox" asp-for="CreateInput.SupportsFragileItems" />
+                            <label class="form-check-label" asp-for="CreateInput.SupportsFragileItems">Aceita frágeis</label>
+                        </div>
+                        <div class="col-6 form-check ms-2 mt-3">
+                            <input class="form-check-input" type="checkbox" asp-for="CreateInput.SupportsRestrictedItems" />
+                            <label class="form-check-label" asp-for="CreateInput.SupportsRestrictedItems">Aceita restritos</label>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Dia da semana (opcional)</label>
+                            <select class="form-select" asp-for="CreateInput.ScheduleDayOfWeek">
+                                <option value="">-- nenhum --</option>
+                                <option value="Sunday">Sunday</option>
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Horário de partida</label>
+                            <input class="form-control" type="time" asp-for="CreateInput.ScheduleDepartureTime" />
+                        </div>
+                    </div>
                 </div>
-                <div class="col-6">
-                    <label class="form-label small">Carrier Code</label>
-                    <input class="form-control" asp-for="CreateInput.CarrierCode" required />
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Criar</button>
                 </div>
-                <div class="col-6">
-                    <label class="form-label small">Service Level Code</label>
-                    <input class="form-control" asp-for="CreateInput.ServiceLevelCode" required />
-                </div>
-                <div class="col-6">
-                    <label class="form-label small">Modo</label>
-                    <select class="form-select" asp-for="CreateInput.Mode">
-                        <option value="Road">Road</option>
-                        <option value="Air">Air</option>
-                        <option value="Rail">Rail</option>
-                        <option value="InternalTransfer">InternalTransfer</option>
-                        <option value="LastMile">LastMile</option>
-                    </select>
-                </div>
-                <div class="col-6">
-                    <label class="form-label small">Trânsito (min)</label>
-                    <input class="form-control" type="number" min="1" asp-for="CreateInput.TransitMinutes" required />
-                </div>
-                <div class="col-6">
-                    <label class="form-label small">Peso máx (kg)</label>
-                    <input class="form-control" type="number" step="0.001" min="0.001" asp-for="CreateInput.MaximumWeightKg" required />
-                </div>
-                <div class="col-6">
-                    <label class="form-label small">Peso cúbico máx (kg)</label>
-                    <input class="form-control" type="number" step="0.001" min="0" asp-for="CreateInput.MaximumCubicWeightKg" required />
-                </div>
-                <div class="col-6 form-check ms-2 mt-3">
-                    <input class="form-check-input" type="checkbox" asp-for="CreateInput.SupportsFragileItems" />
-                    <label class="form-check-label" asp-for="CreateInput.SupportsFragileItems">Aceita frágeis</label>
-                </div>
-                <div class="col-6 form-check ms-2 mt-3">
-                    <input class="form-check-input" type="checkbox" asp-for="CreateInput.SupportsRestrictedItems" />
-                    <label class="form-check-label" asp-for="CreateInput.SupportsRestrictedItems">Aceita restritos</label>
-                </div>
-                <div class="col-6">
-                    <label class="form-label small">Dia da semana (opcional)</label>
-                    <select class="form-select" asp-for="CreateInput.ScheduleDayOfWeek">
-                        <option value="">-- nenhum --</option>
-                        <option value="Sunday">Sunday</option>
-                        <option value="Monday">Monday</option>
-                        <option value="Tuesday">Tuesday</option>
-                        <option value="Wednesday">Wednesday</option>
-                        <option value="Thursday">Thursday</option>
-                        <option value="Friday">Friday</option>
-                        <option value="Saturday">Saturday</option>
-                    </select>
-                </div>
-                <div class="col-6">
-                    <label class="form-label small">Horário de partida</label>
-                    <input class="form-control" type="time" asp-for="CreateInput.ScheduleDepartureTime" />
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary mt-3">Criar</button>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    @await Html.PartialAsync("_DataTablesAssets", "scripts")
+    <script>
+        $(function () {
+            $('#lanes-table').DataTable({
+                columnDefs: [{ targets: -1, orderable: false }],
+                dom: '<"d-flex justify-content-between align-items-center mb-2"Bf>rt<"d-flex justify-content-between align-items-center mt-2"lp>',
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+            });
+
+            @if (Model.ShowCreateModal)
+            {
+                <text>
+                var createLaneModal = new bootstrap.Modal(document.getElementById('createLaneModal'));
+                createLaneModal.show();
+                </text>
+            }
+        });
+    </script>
+}

@@ -4,6 +4,10 @@
     ViewData["Title"] = "Admin - Trilha de Auditoria";
 }
 
+@section Styles {
+    @await Html.PartialAsync("_DataTablesAssets", "styles")
+}
+
 @if (Model.ErrorMessage is not null)
 {
     <div class="alert alert-warning">@Model.ErrorMessage</div>
@@ -32,7 +36,7 @@
     </div>
 </div>
 
-<table class="table table-sm table-striped">
+<table id="audit-table" class="table table-sm table-striped w-100">
     <thead>
         <tr>
             <th>Quando</th>
@@ -57,3 +61,16 @@
         }
     </tbody>
 </table>
+
+@section Scripts {
+    @await Html.PartialAsync("_DataTablesAssets", "scripts")
+    <script>
+        $(function () {
+            $('#audit-table').DataTable({
+                order: [[0, 'desc']],
+                dom: '<"d-flex justify-content-between align-items-center mb-2"Bf>rt<"d-flex justify-content-between align-items-center mt-2"lp>',
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+            });
+        });
+    </script>
+}

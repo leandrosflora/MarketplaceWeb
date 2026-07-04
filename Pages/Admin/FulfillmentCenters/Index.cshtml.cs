@@ -21,6 +21,8 @@ public sealed class IndexModel : PageModel
 
     public string? ErrorMessage { get; private set; }
 
+    public bool ShowCreateModal { get; private set; }
+
     [TempData]
     public string? SuccessMessage { get; set; }
 
@@ -33,6 +35,7 @@ public sealed class IndexModel : PageModel
     {
         if (!ModelState.IsValid)
         {
+            ShowCreateModal = true;
             await LoadAsync(cancellationToken);
             return Page();
         }
@@ -57,6 +60,7 @@ public sealed class IndexModel : PageModel
         catch (BffApiException exception)
         {
             ModelState.AddModelError(string.Empty, exception.Message);
+            ShowCreateModal = true;
             await LoadAsync(cancellationToken);
             return Page();
         }

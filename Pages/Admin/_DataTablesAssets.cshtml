@@ -1,0 +1,23 @@
+@* Vendored DataTables (core + Bootstrap5 styling + Buttons/JSZip/pdfmake for CSV/Excel/PDF/Print export).
+   Include the "styles" section from @section Styles and the "scripts" section from @section Scripts —
+   link tags belong in <head>, script tags belong at the bottom of <body>, so this partial renders
+   only the piece its caller asks for via the `part` parameter ("styles" or "scripts"). *@
+@model string
+@if (Model == "styles")
+{
+    <link rel="stylesheet" href="~/lib/datatables/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="~/lib/datatables/css/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" href="~/lib/datatables/css/buttons.bootstrap5.min.css" />
+}
+else
+{
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/lib/datatables/js/jszip.min.js"></script>
+    <script src="~/lib/datatables/js/pdfmake.min.js"></script>
+    <script src="~/lib/datatables/js/vfs_fonts.js"></script>
+    <script src="~/lib/datatables/js/dataTables.buttons.min.js"></script>
+    <script src="~/lib/datatables/js/buttons.bootstrap5.min.js"></script>
+    <script src="~/lib/datatables/js/buttons.html5.min.js"></script>
+    <script src="~/lib/datatables/js/buttons.print.min.js"></script>
+}

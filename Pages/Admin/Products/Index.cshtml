@@ -5,9 +5,7 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/lib/datatables/css/jquery.dataTables.min.css" />
-    <link rel="stylesheet" href="~/lib/datatables/css/dataTables.bootstrap5.min.css" />
-    <link rel="stylesheet" href="~/lib/datatables/css/buttons.bootstrap5.min.css" />
+    @await Html.PartialAsync("_DataTablesAssets", "styles")
 }
 
 @if (Model.SuccessMessage is not null)
@@ -137,15 +135,7 @@
 </div>
 
 @section Scripts {
-    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
-    <script src="~/lib/datatables/js/dataTables.bootstrap5.min.js"></script>
-    <script src="~/lib/datatables/js/jszip.min.js"></script>
-    <script src="~/lib/datatables/js/pdfmake.min.js"></script>
-    <script src="~/lib/datatables/js/vfs_fonts.js"></script>
-    <script src="~/lib/datatables/js/dataTables.buttons.min.js"></script>
-    <script src="~/lib/datatables/js/buttons.bootstrap5.min.js"></script>
-    <script src="~/lib/datatables/js/buttons.html5.min.js"></script>
-    <script src="~/lib/datatables/js/buttons.print.min.js"></script>
+    @await Html.PartialAsync("_DataTablesAssets", "scripts")
     <script>
         $(function () {
             $('#products-table').DataTable({

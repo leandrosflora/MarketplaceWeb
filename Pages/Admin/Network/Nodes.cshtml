@@ -4,6 +4,10 @@
     ViewData["Title"] = "Admin - Nós Logísticos";
 }
 
+@section Styles {
+    @await Html.PartialAsync("_DataTablesAssets", "styles")
+}
+
 @if (Model.SuccessMessage is not null)
 {
     <div class="alert alert-success">@Model.SuccessMessage</div>
@@ -27,7 +31,13 @@
     </div>
 </form>
 
-<table class="table table-sm">
+<div class="d-flex align-items-center justify-content-end mb-3">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createNodeModal">
+        <i class="bi bi-plus-lg me-1"></i> Novo
+    </button>
+</div>
+
+<table id="nodes-table" class="table table-sm w-100">
     <thead>
         <tr>
             <th>Código</th>
@@ -55,43 +65,73 @@
     </tbody>
 </table>
 
-<div class="card" style="max-width: 560px;">
-    <div class="card-header">Criar Nó Logístico</div>
-    <div class="card-body">
-        <form method="post" asp-page-handler="Create">
-            <div class="row g-2">
-                <div class="col-6">
-                    <label class="form-label small">Código</label>
-                    <input class="form-control" asp-for="CreateInput.Code" required />
+<div class="modal fade" id="createNodeModal" tabindex="-1" aria-labelledby="createNodeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Create">
+                <div class="modal-header">
+                    <h2 class="modal-title h5" id="createNodeModalLabel">Criar Nó Logístico</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
-                <div class="col-6">
-                    <label class="form-label small">Nome</label>
-                    <input class="form-control" asp-for="CreateInput.Name" required />
+                <div class="modal-body">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="form-label small">Código</label>
+                            <input class="form-control" asp-for="CreateInput.Code" required />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Nome</label>
+                            <input class="form-control" asp-for="CreateInput.Name" required />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Região</label>
+                            <input class="form-control" asp-for="CreateInput.Region" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Timezone</label>
+                            <input class="form-control" asp-for="CreateInput.TimeZoneId" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Tipo</label>
+                            <select class="form-select" asp-for="CreateInput.Type">
+                                <option value="FulfillmentCenter">FulfillmentCenter</option>
+                                <option value="CrossDocking">CrossDocking</option>
+                                <option value="RegionalHub">RegionalHub</option>
+                                <option value="SortationCenter">SortationCenter</option>
+                                <option value="LastMileStation">LastMileStation</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Handling (min)</label>
+                            <input class="form-control" type="number" min="0" asp-for="CreateInput.HandlingMinutes" />
+                        </div>
+                    </div>
                 </div>
-                <div class="col-6">
-                    <label class="form-label small">Região</label>
-                    <input class="form-control" asp-for="CreateInput.Region" />
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Criar</button>
                 </div>
-                <div class="col-6">
-                    <label class="form-label small">Timezone</label>
-                    <input class="form-control" asp-for="CreateInput.TimeZoneId" />
-                </div>
-                <div class="col-6">
-                    <label class="form-label small">Tipo</label>
-                    <select class="form-select" asp-for="CreateInput.Type">
-                        <option value="FulfillmentCenter">FulfillmentCenter</option>
-                        <option value="CrossDocking">CrossDocking</option>
-                        <option value="RegionalHub">RegionalHub</option>
-                        <option value="SortationCenter">SortationCenter</option>
-                        <option value="LastMileStation">LastMileStation</option>
-                    </select>
-                </div>
-                <div class="col-6">
-                    <label class="form-label small">Handling (min)</label>
-                    <input class="form-control" type="number" min="0" asp-for="CreateInput.HandlingMinutes" />
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary mt-3">Criar</button>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    @await Html.PartialAsync("_DataTablesAssets", "scripts")
+    <script>
+        $(function () {
+            $('#nodes-table').DataTable({
+                dom: '<"d-flex justify-content-between align-items-center mb-2"Bf>rt<"d-flex justify-content-between align-items-center mt-2"lp>',
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+            });
+
+            @if (Model.ShowCreateModal)
+            {
+                <text>
+                var createNodeModal = new bootstrap.Modal(document.getElementById('createNodeModal'));
+                createNodeModal.show();
+                </text>
+            }
+        });
+    </script>
+}

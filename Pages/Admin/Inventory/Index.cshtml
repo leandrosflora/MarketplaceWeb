@@ -4,6 +4,10 @@
     ViewData["Title"] = "Admin - Estoque";
 }
 
+@section Styles {
+    @await Html.PartialAsync("_DataTablesAssets", "styles")
+}
+
 @if (Model.SuccessMessage is not null)
 {
     <div class="alert alert-success">@Model.SuccessMessage</div>
@@ -17,25 +21,30 @@
     <div class="alert alert-danger" asp-validation-summary="All"></div>
 }
 
-<form method="get" class="row g-2 align-items-end mb-4">
-    <div class="col-auto">
-        <label class="form-label small mb-1">Seller ID</label>
-        <input class="form-control form-control-sm" name="SellerId" value="@Model.SellerId" />
-    </div>
-    <div class="col-auto">
-        <label class="form-label small mb-1">SKU ID</label>
-        <input class="form-control form-control-sm" name="SkuId" value="@Model.SkuId" />
-    </div>
-    <div class="col-auto">
-        <label class="form-label small mb-1">Fulfillment Center ID</label>
-        <input class="form-control form-control-sm" name="FulfillmentCenterId" value="@Model.FulfillmentCenterId" />
-    </div>
-    <div class="col-auto">
-        <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
-    </div>
-</form>
+<div class="d-flex align-items-end justify-content-between mb-4 flex-wrap gap-2">
+    <form method="get" class="row g-2 align-items-end flex-grow-1">
+        <div class="col-auto">
+            <label class="form-label small mb-1">Seller ID</label>
+            <input class="form-control form-control-sm" name="SellerId" value="@Model.SellerId" />
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">SKU ID</label>
+            <input class="form-control form-control-sm" name="SkuId" value="@Model.SkuId" />
+        </div>
+        <div class="col-auto">
+            <label class="form-label small mb-1">Fulfillment Center ID</label>
+            <input class="form-control form-control-sm" name="FulfillmentCenterId" value="@Model.FulfillmentCenterId" />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+        </div>
+    </form>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adjustStockModal">
+        <i class="bi bi-plus-lg me-1"></i> Ajustar Estoque
+    </button>
+</div>
 
-<table class="table table-sm">
+<table id="inventory-table" class="table table-sm w-100">
     <thead>
         <tr>
             <th>Seller</th>
@@ -63,38 +72,67 @@
     </tbody>
 </table>
 
-<div class="card" style="max-width: 560px;">
-    <div class="card-header">Ajustar Estoque</div>
-    <div class="card-body">
-        <form method="post" asp-page-handler="Adjust">
-            <div class="row g-2">
-                <div class="col-6">
-                    <label class="form-label small">Seller ID</label>
-                    <input class="form-control" asp-for="AdjustInput.SellerId" />
+<div class="modal fade" id="adjustStockModal" tabindex="-1" aria-labelledby="adjustStockModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Adjust">
+                <div class="modal-header">
+                    <h2 class="modal-title h5" id="adjustStockModalLabel">Ajustar Estoque</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
-                <div class="col-6">
-                    <label class="form-label small">SKU ID</label>
-                    <input class="form-control" asp-for="AdjustInput.SkuId" />
+                <div class="modal-body">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="form-label small">Seller ID</label>
+                            <input class="form-control" asp-for="AdjustInput.SellerId" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">SKU ID</label>
+                            <input class="form-control" asp-for="AdjustInput.SkuId" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Fulfillment Center ID</label>
+                            <input class="form-control" asp-for="AdjustInput.FulfillmentCenterId" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Quantidade (+/-)</label>
+                            <input class="form-control" type="number" asp-for="AdjustInput.QuantityDelta" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small">Motivo</label>
+                            <input class="form-control" asp-for="AdjustInput.Reason" placeholder="ex: INITIAL_LOAD" required />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small">Descrição (opcional)</label>
+                            <input class="form-control" asp-for="AdjustInput.Description" />
+                        </div>
+                    </div>
                 </div>
-                <div class="col-6">
-                    <label class="form-label small">Fulfillment Center ID</label>
-                    <input class="form-control" asp-for="AdjustInput.FulfillmentCenterId" />
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Ajustar Estoque</button>
                 </div>
-                <div class="col-6">
-                    <label class="form-label small">Quantidade (+/-)</label>
-                    <input class="form-control" type="number" asp-for="AdjustInput.QuantityDelta" />
-                </div>
-                <div class="col-6">
-                    <label class="form-label small">Motivo</label>
-                    <input class="form-control" asp-for="AdjustInput.Reason" placeholder="ex: INITIAL_LOAD" required />
-                </div>
-                <div class="col-12">
-                    <label class="form-label small">Descrição (opcional)</label>
-                    <input class="form-control" asp-for="AdjustInput.Description" />
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary mt-3">Ajustar Estoque</button>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    @await Html.PartialAsync("_DataTablesAssets", "scripts")
+    <script>
+        $(function () {
+            $('#inventory-table').DataTable({
+                dom: '<"d-flex justify-content-between align-items-center mb-2"Bf>rt<"d-flex justify-content-between align-items-center mt-2"lp>',
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+            });
+
+            @if (Model.ShowAdjustModal)
+            {
+                <text>
+                var adjustStockModal = new bootstrap.Modal(document.getElementById('adjustStockModal'));
+                adjustStockModal.show();
+                </text>
+            }
+        });
+    </script>
+}
