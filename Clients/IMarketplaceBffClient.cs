@@ -60,4 +60,20 @@ public interface IMarketplaceBffClient
     Task<ShipmentLabelResponse?> GetShipmentLabelAsync(
         Guid shipmentId,
         CancellationToken cancellationToken);
+
+    Task<CartResponse> GetCartAsync(string cartOwnerId, CancellationToken cancellationToken);
+
+    Task<CartResponse> AddCartItemAsync(string cartOwnerId, AddCartItemRequest request, CancellationToken cancellationToken);
+
+    Task<CartResponse> UpdateCartItemQuantityAsync(string cartOwnerId, Guid skuId, int quantity, CancellationToken cancellationToken);
+
+    Task<CartResponse> RemoveCartItemAsync(string cartOwnerId, Guid skuId, CancellationToken cancellationToken);
+
+    Task MergeCartsAsync(string anonymousCartOwnerId, string buyerCartOwnerId, CancellationToken cancellationToken);
+
+    Task<CartCheckoutResponse> ProceedToCheckoutAsync(string cartOwnerId, ProceedToCheckoutRequest request, CancellationToken cancellationToken);
+
+    Task<PaymentMethodResponse> SubmitPaymentMethodAsync(Guid checkoutId, PaymentMethodRequest request, CancellationToken cancellationToken);
+
+    Task<PaymentMethodResponse?> GetPaymentMethodAsync(Guid checkoutId, CancellationToken cancellationToken);
 }

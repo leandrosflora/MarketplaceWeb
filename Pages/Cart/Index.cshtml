@@ -1,0 +1,98 @@
+@page "/cart"
+@model Marketplace.Web.Pages.Cart.IndexModel
+@{
+    ViewData["Title"] = "Carrinho";
+}
+
+<div class="container py-4">
+    <h1 class="h3 mb-4">Meu carrinho</h1>
+
+    @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+    {
+        <div class="alert alert-success" role="alert">@Model.SuccessMessage</div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">@Model.ErrorMessage</div>
+    }
+
+    @if (Model.CartState.SellerGroups.Count == 0)
+    {
+        <div class="marketplace-card p-4 text-center text-muted">
+            Seu carrinho está vazio. <a asp-page="/Index">Continuar comprando</a>.
+        </div>
+    }
+    else
+    {
+        @if (Model.CartState.HasMultipleSellers)
+        {
+            <div class="alert alert-info" role="alert">
+                Seu carrinho tem itens de @Model.CartState.SellerGroups.Count vendedores diferentes.
+                Ao prosseguir, isso vai gerar @Model.CartState.SellerGroups.Count pedidos separados (um por vendedor).
+            </div>
+        }
+
+        @foreach (var group in Model.CartState.SellerGroups)
+        {
+            <div class="marketplace-card mb-3 p-3">
+                <div class="text-muted small mb-2">Vendedor <code>@group.SellerId</code></div>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th class="text-end">Preço</th>
+                                <th class="text-center" style="width: 160px;">Quantidade</th>
+                                <th class="text-end">Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in group.Items)
+                            {
+                                <tr>
+                                    <td>@item.Title</td>
+                                    <td class="text-end">@item.UnitPrice.ToString("C")</td>
+                                    <td>
+                                        <form method="post" asp-page-handler="UpdateQuantity" class="d-flex gap-2 justify-content-center">
+                                            <input type="hidden" name="skuId" value="@item.SkuId" />
+                                            <input type="number" name="quantity" value="@item.Quantity" min="1" class="form-control form-control-sm" style="width: 80px;" />
+                                            <button type="submit" class="btn btn-sm btn-outline-secondary">Atualizar</button>
+                                        </form>
+                                    </td>
+                                    <td class="text-end">@item.LineTotal.ToString("C")</td>
+                                    <td class="text-end">
+                                        <form method="post" asp-page-handler="Remove">
+                                            <input type="hidden" name="skuId" value="@item.SkuId" />
+                                            <button type="submit" class="btn btn-sm btn-link text-danger">Remover</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-end fw-semibold mt-2">Subtotal: @group.Subtotal.ToString("C")</div>
+            </div>
+        }
+
+        <div class="marketplace-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="h5 mb-0">Total: @Model.CartState.Total.ToString("C")</span>
+                <span class="text-muted">@Model.CartState.TotalItemCount item(ns)</span>
+            </div>
+
+            <form method="post" asp-page-handler="ProceedToCheckout" class="row g-2 align-items-end">
+                <div class="col-auto">
+                    <label class="form-label small mb-1">CEP de entrega</label>
+                    <input asp-for="ZipCode" class="form-control" placeholder="00000-000" />
+                    <span asp-validation-for="ZipCode" class="text-danger small"></span>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Continuar para o pagamento</button>
+                </div>
+            </form>
+        </div>
+    }
+</div>

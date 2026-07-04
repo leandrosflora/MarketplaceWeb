@@ -1,5 +1,6 @@
 using Marketplace.Web.Clients;
 using Marketplace.Web.Contracts;
+using Marketplace.Web.Infrastructure.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
@@ -9,17 +10,12 @@ namespace Marketplace.Web.Pages.Orders;
 public sealed class IndexModel : PageModel
 {
     private const int PageSize = 10;
-    private static readonly Guid FallbackDemoBuyerId = Guid.Parse("11111111-1111-1111-1111-111111111111");
 
     private readonly IMarketplaceBffClient _bffClient;
-    private readonly Guid _demoBuyerId;
 
-    public IndexModel(IMarketplaceBffClient bffClient, IConfiguration configuration)
+    public IndexModel(IMarketplaceBffClient bffClient)
     {
         _bffClient = bffClient;
-        _demoBuyerId = Guid.TryParse(configuration["Checkout:DemoBuyerId"], out var configuredBuyerId)
-            ? configuredBuyerId
-            : FallbackDemoBuyerId;
     }
 
     [BindProperty]
@@ -68,7 +64,16 @@ public sealed class IndexModel : PageModel
             PageNumber = 1;
         }
 
-        var orders = await _bffClient.ListOrdersAsync(_demoBuyerId, cancellationToken);
+        var buyerIdClaim = User.FindFirst(MarketplaceAuthConstants.BuyerIdClaim)?.Value;
+
+        if (!Guid.TryParse(buyerIdClaim, out var buyerId))
+        {
+            PagedOrders = [];
+            TotalCount = 0;
+            return;
+        }
+
+        var orders = await _bffClient.ListOrdersAsync(buyerId, cancellationToken);
         TotalCount = orders.Count;
 
         if (PageNumber > TotalPages)

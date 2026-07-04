@@ -1,5 +1,6 @@
 using Marketplace.Web.Clients;
 using Marketplace.Web.Contracts;
+using Marketplace.Web.Infrastructure.Cart;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -7,17 +8,13 @@ namespace Marketplace.Web.Pages.Products;
 
 public sealed class DetailsModel : PageModel
 {
-    private static readonly Guid FallbackDemoBuyerId = Guid.Parse("11111111-1111-1111-1111-111111111111");
-
     private readonly IMarketplaceBffClient _bffClient;
-    private readonly Guid _demoBuyerId;
+    private readonly ICartOwnerIdAccessor _cartOwnerIdAccessor;
 
-    public DetailsModel(IMarketplaceBffClient bffClient, IConfiguration configuration)
+    public DetailsModel(IMarketplaceBffClient bffClient, ICartOwnerIdAccessor cartOwnerIdAccessor)
     {
         _bffClient = bffClient;
-        _demoBuyerId = Guid.TryParse(configuration["Checkout:DemoBuyerId"], out var configuredBuyerId)
-            ? configuredBuyerId
-            : FallbackDemoBuyerId;
+        _cartOwnerIdAccessor = cartOwnerIdAccessor;
     }
 
     [BindProperty(SupportsGet = true)]
@@ -38,7 +35,7 @@ public sealed class DetailsModel : PageModel
         return loaded ? Page() : NotFound();
     }
 
-    public async Task<IActionResult> OnPostBuyAsync(CancellationToken cancellationToken)
+    public async Task<IActionResult> OnPostAddToCartAsync(CancellationToken cancellationToken)
     {
         var loaded = await LoadProductPageAsync(cancellationToken);
 
@@ -47,39 +44,19 @@ public sealed class DetailsModel : PageModel
             return NotFound();
         }
 
-        var normalizedZipCode = NormalizeZipCode(ZipCode);
+        var cartOwnerId = _cartOwnerIdAccessor.GetOrCreateCartOwnerId(HttpContext);
 
-        if (normalizedZipCode is null)
-        {
-            ModelState.AddModelError(string.Empty, "Informe um CEP válido para continuar a compra.");
-            return Page();
-        }
-
-        if (ProductPage.Shipping is not { Available: true, PromiseId: not null })
-        {
-            ModelState.AddModelError(string.Empty, "Calcule uma entrega disponível antes de continuar a compra.");
-            return Page();
-        }
-
-        var checkout = await _bffClient.CreateCheckoutAsync(
-            new CreateCheckoutRequest(
-                _demoBuyerId,
+        await _bffClient.AddCartItemAsync(
+            cartOwnerId,
+            new AddCartItemRequest(
+                ProductPage.Product.SkuId,
                 ProductPage.Product.SellerId,
-                new ShippingAddressRequest(
-                    normalizedZipCode,
-                    string.Empty,
-                    string.Empty,
-                    "BR"),
-                [
-                    new CreateCheckoutItemRequest(
-                        ProductPage.Product.SkuId,
-                        Quantity,
-                        ProductPage.Product.Price)
-                ]),
-            Guid.NewGuid().ToString("N"),
+                ProductPage.Product.Title,
+                ProductPage.Product.Price,
+                Quantity),
             cancellationToken);
 
-        return RedirectToPage("/Checkout/Review", new { checkoutId = checkout.CheckoutId });
+        return RedirectToPage("/Cart/Index");
     }
 
     private async Task<bool> LoadProductPageAsync(CancellationToken cancellationToken)

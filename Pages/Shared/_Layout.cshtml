@@ -1,3 +1,7 @@
+@using Marketplace.Web.Clients
+@using Marketplace.Web.Infrastructure.Cart
+@inject IMarketplaceBffClient BffClient
+@inject ICartOwnerIdAccessor CartOwnerIdAccessor
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -22,6 +26,17 @@
                 </form>
 
                 <div class="d-flex align-items-center gap-2 ms-auto flex-shrink-0">
+                    <a asp-page="/Cart/Index" class="btn btn-outline-light position-relative">
+                        Carrinho
+                        @{
+                            var cartItemCount = await GetCartItemCountAsync();
+                        }
+                        @if (cartItemCount > 0)
+                        {
+                            <span class="badge text-bg-danger ms-1">@cartItemCount</span>
+                        }
+                    </a>
+
                     @if (User.Identity?.IsAuthenticated == true)
                     {
                         <a asp-page="/Orders/Index" class="btn btn-outline-light">Meus pedidos</a>
@@ -57,3 +72,27 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+@functions {
+    private async Task<int> GetCartItemCountAsync()
+    {
+        var cartOwnerId = User.Identity?.IsAuthenticated == true
+            ? CartOwnerIdAccessor.GetOrCreateCartOwnerId(Context)
+            : CartOwnerIdAccessor.TryGetAnonymousCartOwnerId(Context);
+
+        if (cartOwnerId is null)
+        {
+            return 0;
+        }
+
+        try
+        {
+            var cart = await BffClient.GetCartAsync(cartOwnerId, Context.RequestAborted);
+            return cart.TotalItemCount;
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+}

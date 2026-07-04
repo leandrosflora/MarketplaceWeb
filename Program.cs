@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using Marketplace.Web.Clients;
 using Marketplace.Web.Infrastructure.Auth;
+using Marketplace.Web.Infrastructure.Cart;
 using Marketplace.Web.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -66,6 +67,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<ICartOwnerIdAccessor, CartOwnerIdAccessor>();
 builder.Services.AddTransient<CorrelationIdHandler>();
 builder.Services.AddTransient<DevAdminIdentityHandler>();
 builder.Services.AddTransient<W3CTraceContextHandler>();

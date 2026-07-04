@@ -261,6 +261,30 @@ internal sealed class FakeMarketplaceBffClient : IMarketplaceBffClient
 
     public Task<ShipmentLabelResponse?> GetShipmentLabelAsync(Guid shipmentId, CancellationToken cancellationToken) =>
         Task.FromResult<ShipmentLabelResponse?>(null);
+
+    public Task<CartResponse> GetCartAsync(string cartOwnerId, CancellationToken cancellationToken) =>
+        throw new NotSupportedException();
+
+    public Task<CartResponse> AddCartItemAsync(string cartOwnerId, AddCartItemRequest request, CancellationToken cancellationToken) =>
+        throw new NotSupportedException();
+
+    public Task<CartResponse> UpdateCartItemQuantityAsync(string cartOwnerId, Guid skuId, int quantity, CancellationToken cancellationToken) =>
+        throw new NotSupportedException();
+
+    public Task<CartResponse> RemoveCartItemAsync(string cartOwnerId, Guid skuId, CancellationToken cancellationToken) =>
+        throw new NotSupportedException();
+
+    public Task MergeCartsAsync(string anonymousCartOwnerId, string buyerCartOwnerId, CancellationToken cancellationToken) =>
+        throw new NotSupportedException();
+
+    public Task<CartCheckoutResponse> ProceedToCheckoutAsync(string cartOwnerId, ProceedToCheckoutRequest request, CancellationToken cancellationToken) =>
+        throw new NotSupportedException();
+
+    public Task<PaymentMethodResponse> SubmitPaymentMethodAsync(Guid checkoutId, PaymentMethodRequest request, CancellationToken cancellationToken) =>
+        throw new NotSupportedException();
+
+    public Task<PaymentMethodResponse?> GetPaymentMethodAsync(Guid checkoutId, CancellationToken cancellationToken) =>
+        throw new NotSupportedException();
 }
 
 internal static class HeaderExtensions

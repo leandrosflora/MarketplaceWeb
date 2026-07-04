@@ -25,6 +25,8 @@ public sealed class ReviewModel : PageModel
 
     public CheckoutPageResponse Checkout { get; private set; } = default!;
 
+    public bool HasPaymentMethod { get; private set; }
+
     public async Task<IActionResult> OnGetAsync(CancellationToken cancellationToken)
     {
         var loaded = await LoadCheckoutAsync(cancellationToken);
@@ -34,10 +36,13 @@ public sealed class ReviewModel : PageModel
             return NotFound();
         }
 
+        var paymentMethod = await _bffClient.GetPaymentMethodAsync(Checkout.CheckoutId, cancellationToken);
+        HasPaymentMethod = paymentMethod is not null;
+
         Input = new ConfirmCheckoutInput
         {
             CheckoutId = Checkout.CheckoutId,
-            PaymentIntentId = $"pi_demo_{Checkout.CheckoutId:N}",
+            PaymentIntentId = paymentMethod?.PaymentIntentId ?? string.Empty,
             IdempotencyKey = Guid.NewGuid().ToString("N")
         };
 

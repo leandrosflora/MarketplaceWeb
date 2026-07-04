@@ -1,0 +1,51 @@
+@page "{checkoutId:guid}"
+@model Marketplace.Web.Pages.Checkout.PaymentModel
+
+@{
+    ViewData["Title"] = "Forma de pagamento";
+}
+
+<div class="container py-4">
+    <p class="marketplace-eyebrow mb-2">Checkout</p>
+    <h1 class="h3 mb-4">Forma de pagamento</h1>
+    <p class="text-muted">
+        Ambiente de demonstração — nenhum dado real de cartão é processado ou armazenado
+        (<code>PaymentService</code> usa um adaptador mock).
+    </p>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">@Model.ErrorMessage</div>
+    }
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <section class="marketplace-card p-4">
+                <form method="post">
+                    <div class="mb-3">
+                        <label asp-for="Input.CardholderName" class="form-label"></label>
+                        <input asp-for="Input.CardholderName" class="form-control" placeholder="Nome como no cartão" />
+                        <span asp-validation-for="Input.CardholderName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.MaskedCardNumber" class="form-label"></label>
+                        <input asp-for="Input.MaskedCardNumber" class="form-control" placeholder="0000" maxlength="4" inputmode="numeric" />
+                        <span asp-validation-for="Input.MaskedCardNumber" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Input.ExpiryMonthYear" class="form-label"></label>
+                        <input asp-for="Input.ExpiryMonthYear" class="form-control" placeholder="MM/AA" maxlength="5" />
+                        <span asp-validation-for="Input.ExpiryMonthYear" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" data-loading-text="Salvando..." class="btn btn-primary w-100">Salvar forma de pagamento</button>
+                    <a asp-page="/Checkout/Review" asp-route-checkoutId="@Model.CheckoutId" class="btn btn-link w-100 mt-2">Voltar para a revisão</a>
+                </form>
+            </section>
+        </div>
+    </div>
+</div>

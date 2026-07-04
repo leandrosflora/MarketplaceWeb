@@ -193,6 +193,91 @@ public sealed class MarketplaceBffClient : IMarketplaceBffClient
         return await response.Content.ReadFromJsonAsync<T>(cancellationToken);
     }
 
+    public Task<CartResponse> GetCartAsync(string cartOwnerId, CancellationToken cancellationToken)
+    {
+        using var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            $"/api/web/v1/cart{BuildQueryString(new Dictionary<string, string?> { ["cartOwnerId"] = cartOwnerId })}");
+
+        return SendAsync<CartResponse>(request, cancellationToken);
+    }
+
+    public Task<CartResponse> AddCartItemAsync(string cartOwnerId, AddCartItemRequest request, CancellationToken cancellationToken)
+    {
+        using var httpRequest = new HttpRequestMessage(
+            HttpMethod.Post,
+            $"/api/web/v1/cart/items{BuildQueryString(new Dictionary<string, string?> { ["cartOwnerId"] = cartOwnerId })}")
+        {
+            Content = JsonContent.Create(request)
+        };
+
+        return SendAsync<CartResponse>(httpRequest, cancellationToken);
+    }
+
+    public Task<CartResponse> UpdateCartItemQuantityAsync(string cartOwnerId, Guid skuId, int quantity, CancellationToken cancellationToken)
+    {
+        using var httpRequest = new HttpRequestMessage(
+            HttpMethod.Put,
+            $"/api/web/v1/cart/items/{skuId}{BuildQueryString(new Dictionary<string, string?> { ["cartOwnerId"] = cartOwnerId })}")
+        {
+            Content = JsonContent.Create(new UpdateCartItemQuantityRequest(quantity))
+        };
+
+        return SendAsync<CartResponse>(httpRequest, cancellationToken);
+    }
+
+    public Task<CartResponse> RemoveCartItemAsync(string cartOwnerId, Guid skuId, CancellationToken cancellationToken)
+    {
+        using var httpRequest = new HttpRequestMessage(
+            HttpMethod.Delete,
+            $"/api/web/v1/cart/items/{skuId}{BuildQueryString(new Dictionary<string, string?> { ["cartOwnerId"] = cartOwnerId })}");
+
+        return SendAsync<CartResponse>(httpRequest, cancellationToken);
+    }
+
+    public async Task MergeCartsAsync(string anonymousCartOwnerId, string buyerCartOwnerId, CancellationToken cancellationToken)
+    {
+        var queryString = BuildQueryString(new Dictionary<string, string?>
+        {
+            ["anonymousCartOwnerId"] = anonymousCartOwnerId,
+            ["buyerCartOwnerId"] = buyerCartOwnerId
+        });
+
+        using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"/api/web/v1/cart/merge{queryString}");
+        using var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
+
+        await EnsureSuccessAsync(response, cancellationToken);
+    }
+
+    public Task<CartCheckoutResponse> ProceedToCheckoutAsync(string cartOwnerId, ProceedToCheckoutRequest request, CancellationToken cancellationToken)
+    {
+        using var httpRequest = new HttpRequestMessage(
+            HttpMethod.Post,
+            $"/api/web/v1/cart/checkout{BuildQueryString(new Dictionary<string, string?> { ["cartOwnerId"] = cartOwnerId })}")
+        {
+            Content = JsonContent.Create(request)
+        };
+
+        return SendAsync<CartCheckoutResponse>(httpRequest, cancellationToken);
+    }
+
+    public Task<PaymentMethodResponse> SubmitPaymentMethodAsync(Guid checkoutId, PaymentMethodRequest request, CancellationToken cancellationToken)
+    {
+        using var httpRequest = new HttpRequestMessage(
+            HttpMethod.Post,
+            $"/api/web/v1/checkouts/{checkoutId}/payment-method")
+        {
+            Content = JsonContent.Create(request)
+        };
+
+        return SendAsync<PaymentMethodResponse>(httpRequest, cancellationToken);
+    }
+
+    public Task<PaymentMethodResponse?> GetPaymentMethodAsync(Guid checkoutId, CancellationToken cancellationToken)
+    {
+        return GetOrNullAsync<PaymentMethodResponse>($"/api/web/v1/checkouts/{checkoutId}/payment-method", cancellationToken);
+    }
+
     private static string BuildQueryString(IReadOnlyDictionary<string, string?> parameters)
     {
         var values = parameters
