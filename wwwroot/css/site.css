@@ -347,6 +347,37 @@ main {
 
 .login-card {
     max-width: 560px;
+    margin: 0 auto;
+}
+
+.login-hero {
+    text-align: center;
+}
+
+.login-avatar {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--marketplace-primary-soft);
+    color: var(--marketplace-primary);
+    font-size: 1.75rem;
+}
+
+.login-card .input-group-text {
+    background: var(--marketplace-surface-soft);
+    border-color: var(--marketplace-border-strong);
+    color: var(--marketplace-muted);
+}
+
+.login-card .input-group .form-control {
+    border-left: 0;
+}
+
+.login-card .input-group:focus-within .input-group-text {
+    border-color: var(--marketplace-primary);
 }
 
 .product-search-card {
