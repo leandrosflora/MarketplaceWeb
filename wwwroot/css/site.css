@@ -10,7 +10,7 @@
     --marketplace-secondary: #00a650;
     --marketplace-secondary-hover: #008f45;
     --marketplace-warning: #fff159;
-    --marketplace-header: #fff159;
+    --marketplace-header: linear-gradient(135deg, #1ab394 0%, #18a689 100%);
     --marketplace-text: #333333;
     --marketplace-muted: #737373;
     --marketplace-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
@@ -105,7 +105,7 @@ main {
 }
 
 .marketplace-logo {
-    color: #222;
+    color: #fff;
     font-size: 1.35rem;
     font-weight: 800;
     letter-spacing: -0.03em;
@@ -113,7 +113,7 @@ main {
 }
 
 .marketplace-logo:hover {
-    color: #111;
+    color: #fff;
 }
 
 .marketplace-header .form-control {
@@ -133,7 +133,13 @@ main {
 .marketplace-header .btn-outline-light {
     color: #333;
     border-color: rgba(0, 0, 0, 0.12);
-    background: rgba(255, 255, 255, 0.35);
+    background: #fff;
+}
+
+.marketplace-header .btn-outline-light:hover,
+.marketplace-header .btn-outline-light:focus {
+    color: #333;
+    background: #fff;
 }
 
 .marketplace-card,

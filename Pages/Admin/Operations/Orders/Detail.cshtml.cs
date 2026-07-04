@@ -3,7 +3,7 @@ using Marketplace.Web.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Marketplace.Web.Pages.Operations.Orders;
+namespace Marketplace.Web.Pages.Admin.Operations.Orders;
 
 public sealed class DetailModel : PageModel
 {

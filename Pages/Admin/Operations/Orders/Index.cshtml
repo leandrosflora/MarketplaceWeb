@@ -1,0 +1,117 @@
+@page "/admin/operations/orders"
+@model Marketplace.Web.Pages.Admin.Operations.Orders.IndexModel
+@{
+    ViewData["Title"] = "Order Monitor";
+    ViewData["JaegerBaseUrl"] = Model.JaegerBaseUrl;
+}
+
+<div data-jaeger-base-url="@Model.JaegerBaseUrl">
+    <div class="d-flex justify-content-end mb-3">
+        <span class="text-muted small">Atualiza automaticamente a cada 4s · última atualização: <span id="last-refresh">-</span></span>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header"><i class="bi bi-funnel me-1"></i> Filtros</div>
+        <div class="card-body">
+            <form method="get" class="row g-2 align-items-end">
+                <div class="col-auto">
+                    <label class="form-label small mb-1">Status</label>
+                    <input class="form-control form-control-sm" name="Status" value="@Model.Status" placeholder="ex: PaymentRejected" />
+                </div>
+                <div class="col-auto">
+                    <label class="form-label small mb-1">Order ID</label>
+                    <input class="form-control form-control-sm" name="OrderId" value="@Model.OrderId" />
+                </div>
+                <div class="col-auto">
+                    <label class="form-label small mb-1">Checkout ID</label>
+                    <input class="form-control form-control-sm" name="CheckoutId" value="@Model.CheckoutId" />
+                </div>
+                <div class="col-auto">
+                    <label class="form-label small mb-1">Correlation ID</label>
+                    <input class="form-control form-control-sm" name="CorrelationId" value="@Model.CorrelationId" />
+                </div>
+                <div class="col-auto">
+                    <label class="form-label small mb-1">Buyer ID</label>
+                    <input class="form-control form-control-sm" name="BuyerId" value="@Model.BuyerId" />
+                </div>
+                <div class="col-auto">
+                    <label class="form-label small mb-1">Seller ID</label>
+                    <input class="form-control form-control-sm" name="SellerId" value="@Model.SellerId" />
+                </div>
+                <div class="col-auto form-check">
+                    <input type="checkbox" class="form-check-input" id="HasError" name="HasError" value="true" checked="@(Model.HasError == true)" />
+                    <label class="form-check-label small" for="HasError">Somente com erro</label>
+                </div>
+                <div class="col-auto form-check">
+                    <input type="checkbox" class="form-check-input" id="StuckOnly" name="StuckOnly" value="true" checked="@(Model.StuckOnly == true)" />
+                    <label class="form-check-label small" for="StuckOnly">Somente travados</label>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-sm btn-primary">Filtrar</button>
+                    <a href="/admin/operations/orders" class="btn btn-sm btn-outline-secondary">Limpar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">@Model.ErrorMessage</div>
+    }
+
+    <div class="card">
+        <div class="card-header">
+            <i class="bi bi-activity me-1"></i> Jornadas
+            <span class="badge text-bg-secondary float-end">@Model.TotalCount</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm table-striped table-hover align-middle mb-0" id="journeys-table">
+                    <thead>
+                        <tr>
+                            <th>Pedido</th>
+                            <th>Checkout</th>
+                            <th>Status</th>
+                            <th>Etapa atual</th>
+                            <th>Último evento</th>
+                            <th>Tempo parado</th>
+                            <th>Erro</th>
+                            <th>Correlation ID</th>
+                            <th>Trace</th>
+                            <th>Atualizado em</th>
+                        </tr>
+                    </thead>
+                    <tbody id="journeys-tbody">
+                        @foreach (var journey in Model.Journeys)
+                        {
+                            <partial name="_JourneyRow" model="journey" />
+                        }
+                    </tbody>
+                </table>
+
+                @if (Model.Journeys.Count == 0)
+                {
+                    <div class="text-muted text-center py-4">Nenhuma jornada encontrada para os filtros informados.</div>
+                }
+            </div>
+        </div>
+        @if (Model.TotalPages > 1)
+        {
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <span class="text-muted small">Página @Model.PageNumber de @Model.TotalPages &middot; @Model.TotalCount jornadas</span>
+                <nav aria-label="Paginação de jornadas">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item @(Model.PageNumber <= 1 ? "disabled" : "")">
+                            <a class="page-link" href="@Model.PageUrl(Model.PageNumber - 1)">Anterior</a>
+                        </li>
+                        <li class="page-item @(Model.PageNumber >= Model.TotalPages ? "disabled" : "")">
+                            <a class="page-link" href="@Model.PageUrl(Model.PageNumber + 1)">Próxima</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        }
+    </div>
+</div>
+
+<script src="~/js/order-monitor.js" asp-append-version="true"></script>

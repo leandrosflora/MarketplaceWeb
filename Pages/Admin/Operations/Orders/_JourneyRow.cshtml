@@ -9,7 +9,7 @@
     <td>
         @if (Model.OrderId is not null)
         {
-            <a asp-page="/Operations/Orders/Detail" asp-route-orderId="@Model.OrderId">@Model.OrderId</a>
+            <a asp-page="/Admin/Operations/Orders/Detail" asp-route-orderId="@Model.OrderId">@Model.OrderId</a>
         }
         else
         {

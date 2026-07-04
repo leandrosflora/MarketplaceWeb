@@ -295,6 +295,29 @@ body.admin-theme .btn-link {
     color: var(--admin-teal-dark);
 }
 
+/* ---------- Pagination ---------- */
+
+body.admin-theme .page-link {
+    color: var(--admin-text);
+    border-color: var(--admin-border);
+    border-radius: 2px;
+}
+
+body.admin-theme .page-link:hover {
+    color: var(--admin-teal-dark);
+    background-color: #f4fbf9;
+    border-color: var(--admin-border);
+}
+
+body.admin-theme .page-item.active .page-link {
+    background-color: var(--admin-teal);
+    border-color: var(--admin-teal);
+}
+
+body.admin-theme .page-item.disabled .page-link {
+    color: var(--admin-muted);
+}
+
 /* ---------- Alerts / badges ---------- */
 
 body.admin-theme .alert {

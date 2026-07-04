@@ -34,7 +34,7 @@
 
     function renderRow(journey) {
         const orderCell = journey.orderId
-            ? `<a href="/operations/orders/detail/${journey.orderId}">${escapeHtml(journey.orderId)}</a>`
+            ? `<a href="/admin/operations/orders/detail/${journey.orderId}">${escapeHtml(journey.orderId)}</a>`
             : '<span class="text-muted">(sem orderId ainda)</span>';
         const errorCell = journey.hasError ? `⚠ ${escapeHtml(journey.errorReason)}` : '';
         const updatedAt = journey.updatedAt ? new Date(journey.updatedAt).toLocaleTimeString() : '';

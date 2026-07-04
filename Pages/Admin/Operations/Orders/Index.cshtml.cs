@@ -2,11 +2,14 @@ using Marketplace.Web.Clients;
 using Marketplace.Web.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.WebUtilities;
 
-namespace Marketplace.Web.Pages.Operations.Orders;
+namespace Marketplace.Web.Pages.Admin.Operations.Orders;
 
 public sealed class IndexModel : PageModel
 {
+    private const int PageSize = 10;
+
     private readonly IOrderVisibilityClient _client;
 
     public IndexModel(IOrderVisibilityClient client, IConfiguration configuration)
@@ -16,6 +19,9 @@ public sealed class IndexModel : PageModel
     }
 
     public string JaegerBaseUrl { get; }
+
+    [BindProperty(SupportsGet = true)]
+    public int PageNumber { get; set; } = 1;
 
     [BindProperty(SupportsGet = true)]
     public string? Status { get; set; }
@@ -43,6 +49,10 @@ public sealed class IndexModel : PageModel
 
     public IReadOnlyList<OrderJourneySummary> Journeys { get; private set; } = [];
 
+    public int TotalCount { get; private set; }
+
+    public int TotalPages => TotalCount == 0 ? 1 : (int)Math.Ceiling(TotalCount / (double)PageSize);
+
     public string? ErrorMessage { get; private set; }
 
     public async Task OnGetAsync(CancellationToken cancellationToken)
@@ -62,13 +72,27 @@ public sealed class IndexModel : PageModel
         return new JsonResult(Journeys);
     }
 
+    public string PageUrl(int page)
+    {
+        var query = QueryHelpers.ParseQuery(Request.QueryString.Value ?? string.Empty)
+            .ToDictionary(kv => kv.Key, kv => (string?)kv.Value.ToString());
+        query["PageNumber"] = page.ToString();
+        return QueryHelpers.AddQueryString(Request.Path.Value ?? "/admin/operations/orders", query);
+    }
+
     private async Task LoadAsync(CancellationToken cancellationToken)
     {
         try
         {
+            if (PageNumber < 1)
+            {
+                PageNumber = 1;
+            }
+
             var filter = new OrderJourneyListFilter(Status, HasError, StuckOnly, OrderId, CheckoutId, CorrelationId, BuyerId, SellerId);
-            var result = await _client.ListJourneysAsync(filter, page: 1, pageSize: 100, cancellationToken);
+            var result = await _client.ListJourneysAsync(filter, PageNumber, PageSize, cancellationToken);
             Journeys = result.Items;
+            TotalCount = result.TotalCount;
         }
         catch (HttpRequestException ex)
         {
