@@ -5,8 +5,20 @@ using Marketplace.Web.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Http.Resilience;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
+var otlpEndpoint = builder.Configuration["OpenTelemetry:OtlpEndpoint"] ?? "http://localhost:5107";
+
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource.AddService(builder.Environment.ApplicationName))
+    .WithTracing(tracing => tracing
+        .AddAspNetCoreInstrumentation(options => options.Filter = httpContext =>
+            !httpContext.Request.Path.StartsWithSegments("/metrics") &&
+            !httpContext.Request.Path.StartsWithSegments("/health"))
+        .AddHttpClientInstrumentation()
+        .AddOtlpExporter(options => options.Endpoint = new Uri(otlpEndpoint)));
 
 var razorPages = builder.Services.AddRazorPages(options =>
 {
@@ -52,6 +64,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<CorrelationIdHandler>();
 builder.Services.AddTransient<DevAdminIdentityHandler>();
+builder.Services.AddTransient<W3CTraceContextHandler>();
 
 builder.Services
     .AddHttpClient<IMarketplaceBffClient, MarketplaceBffClient>(client =>
@@ -64,6 +77,7 @@ builder.Services
         client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
     })
+    .AddHttpMessageHandler<W3CTraceContextHandler>()
     .AddHttpMessageHandler<CorrelationIdHandler>();
 
 builder.Services
@@ -77,6 +91,7 @@ builder.Services
         client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
     })
+    .AddHttpMessageHandler<W3CTraceContextHandler>()
     .AddHttpMessageHandler<CorrelationIdHandler>()
     .AddHttpMessageHandler<DevAdminIdentityHandler>();
 
@@ -90,6 +105,7 @@ builder.Services
         client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
     })
+    .AddHttpMessageHandler<W3CTraceContextHandler>()
     .AddHttpMessageHandler<CorrelationIdHandler>();
     //.AddStandardResilienceHandler(options =>
     //{
