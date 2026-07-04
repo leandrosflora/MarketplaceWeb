@@ -20,4 +20,8 @@
     <None Remove="MarketplaceWeb.Tests\**\*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Meli.Observability\Meli.Observability.csproj" />
+  </ItemGroup>
+
 </Project>
